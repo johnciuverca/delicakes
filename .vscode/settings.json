@@ -1,0 +1,12 @@
+{
+      "terminal.integrated.fontFamily": "Menlo",
+      "terminal.integrated.fontSize": 12,
+      "terminal.integrated.lineHeight": 1.0,
+      "terminal.integrated.fontWeight": "normal",
+      "terminal.integrated.letterSpacing": 0,
+      "terminal.integrated.cursorStyle": "block",
+      "terminal.integrated.cursorBlinking": true,
+      "terminal.integrated.drawBoldTextInBrightColors": true,
+      "terminal.integrated.minimumContrastRatio": 1,
+      "livePreview.defaultPreviewPath": "/main/src/index.html"
+}

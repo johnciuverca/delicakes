@@ -1,3 +1,12 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
 # Logs
 logs
 *.log
@@ -119,6 +128,7 @@ dist
 # Firebase cache directory
 .firebase/
 
+
 # TernJS port file
 .tern-port
 
@@ -137,3 +147,6 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Storage files
+**/.storage/

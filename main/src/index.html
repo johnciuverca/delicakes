@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>My Web Page</title>
+      <link rel="stylesheet" href="./style/style.css">
+
+</html>
+
+<body>
+      <div class="container">
+            <header class="header-flex">
+                  <h1>
+                        <a href="/" class="home-link" style="color:inherit;text-decoration:none;">Delicakes
+                              <span class="tooltip">Home</span>
+                        </a>
+                  </h1>
+                  <div class="social-icons">
+                        <a href="https://instagram.com" target="_blank" aria-label="Instagram">
+                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg"
+                                    alt="Instagram" width="32" height="32">
+                        </a>
+                        <a href="https://facebook.com" target="_blank" aria-label="Facebook">
+                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg"
+                                    alt="Facebook" width="32" height="32">
+                        </a>
+                        <a href="https://tiktok.com" target="_blank" aria-label="TikTok">
+                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg"
+                                    alt="TikTok" width="32" height="32">
+                        </a>
+                  </div>
+            </header>
+            <nav class="navbar">
+                  <div class="left-links">
+                        <a href="pages/recipes.html">Recipes</a>
+                        <a href="pages/about.html">About</a>
+                  </div>
+                  <div class="right-links">
+                        <a href="pages/contact.html">Contact</a>
+                        <a href="pages/login.html">Login</a>
+
+                  </div>
+            </nav>
+            <div class="main">
+                  <div class="slideshow-container">
+                        <button class="carousel-btn prev" onclick="previousSlide()">&#10094;</button>
+                        <div class="photo-sections" id="photo-sections"></div>
+                        <button class="carousel-btn next" onclick="nextSlide()">&#10095;</button>
+                  </div>
+                  <script>
+                        const assetsPath = '../assets';
+                        const imagesPath = `${assetsPath}/images`;
+                        const imageFiles = [
+                              '1.jpeg', '2.jpeg', '3.jpeg', '4.jpeg', '5.jpeg', '6.jpeg', '7.jpeg', '8.jpeg', '9.jpeg', '10.jpeg', '11.jpeg', '12.jpeg', 'WhatsApp Image 2025-10-06 at 13.10.37.jpeg', 'maria1.jpeg', 'maria2.jpeg'
+                        ];
+
+                        let currentPhotoIndex = 0;
+                        let slideInterval;
+
+                        function createSlideshow() {
+                              const container = document.getElementById('photo-sections');
+                              container.innerHTML = '';
+
+                              // Create a very long continuous repeating sequence to avoid any resets
+                              const repeatingImages = [];
+                              for (let i = 0; i < 100; i++) { // Create 100 repetitions for virtually infinite scrolling
+                                    repeatingImages.push(...imageFiles);
+                              }
+
+                              // Create all individual photos in continuous sequence
+                              repeatingImages.forEach((file, i) => {
+                                    const div = document.createElement('div');
+                                    div.className = 'photo-item';
+                                    const img = document.createElement('img');
+                                    img.src = `${imagesPath}/${file}`;
+                                    img.alt = `Photo ${(i % imageFiles.length) + 1}`;
+                                    div.appendChild(img);
+                                    container.appendChild(div);
+                              });
+
+                              // Start from the beginning
+                              currentPhotoIndex = 0;
+                        }
+
+                        function showCurrentPhotos() {
+                              const container = document.getElementById('photo-sections');
+                              // Calculate offset to slide one photo at a time
+                              const containerWidth = container.parentElement.offsetWidth;
+                              const photoWidth = (containerWidth + (2 * 16)) / 3; // Width of one photo including gap (2rem = 32px, split = 16px each side)
+                              const offset = -(currentPhotoIndex * photoWidth);
+                              container.style.transform = `translateX(${offset}px)`;
+                        }
+
+                        function slideToNext() {
+                              currentPhotoIndex++;
+                              showCurrentPhotos();
+                        }
+
+                        function nextSlide() {
+                              slideToNext();
+                              resetAutoSlide();
+                        }
+
+                        function previousSlide() {
+                              currentPhotoIndex--;
+                              if (currentPhotoIndex < 0) {
+                                    currentPhotoIndex = 0;
+                              }
+                              showCurrentPhotos();
+                              resetAutoSlide();
+                        }
+
+                        function startSlideshow() {
+                              slideInterval = setInterval(slideToNext, 5000);
+                        }
+
+                        function resetAutoSlide() {
+                              clearInterval(slideInterval);
+                              startSlideshow();
+                        }
+
+                        // Initialize slideshow
+                        createSlideshow();
+                        showCurrentPhotos();
+                        startSlideshow();
+                  </script>
+            </div>
+      </div>
+</body>
+
+</html>
