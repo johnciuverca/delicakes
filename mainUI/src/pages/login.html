@@ -123,7 +123,7 @@
                               </select>
 
                               <label for="psw"><b>Password</b></label>
-                              <input type="password" placeholder="Enter Password" name="psw" required>
+                              <input type="password" placeholder="Enter Password" name="psw">
 
                               <button type="submit">Login</button>
 
@@ -137,6 +137,31 @@
                   </form>
             </div>
       </div>
+      <script>
+            const knownCredentials = new Map([
+                  ['admin', '0000'],
+                  ['audit', '0000']
+            ]);
+            const loginForm = document.querySelector('.login-form');
+
+            loginForm.addEventListener('submit', function (event) {
+                  event.preventDefault();
+
+                  const role = document.getElementById('role').value;
+                  const inputPassword = loginForm.psw.value;
+                  const realPassword = knownCredentials.get(role);
+
+                  if (realPassword && inputPassword === realPassword) {
+                        if (role === 'admin') {
+                              window.location.href = '/expense-tracker';
+                        } else {
+                              window.location.href = '/';
+                        }
+                  } else {
+                        alert('Invalid role or password. Please try again.');
+                  }
+            });
+      </script>
 </body>
 
 </html>
