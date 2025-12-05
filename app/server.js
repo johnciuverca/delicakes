@@ -14,15 +14,23 @@ app.use(express.static(path.join(__dirname, '../mainUI/src')));
 // Serve images from assets folder
 app.use('/assets', express.static(path.join(__dirname, '../mainUI/assets')));
 
+// Serve static files from the expense-tracker folder
+app.use('/expense-tracker', express.static(path.join(__dirname, '../expense-tracker/src')));
+
 // Serve the main page
 app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, '../mainUI/src/index.html'));
 });
 
-// API routes
-app.get('/api/health', (req, res) => {
-      res.json({ status: 'ok', message: 'Server is running' });
+//
+app.get('/expense-tracker', (req, res) => {
+      res.sendFile(path.join(__dirname, '../expense-tracker/src/index.html'));
 });
+
+// API routes
+// app.get('/api/health', (req, res) => {
+//       res.json({ status: 'ok', message: 'Server is running' });
+// });
 
 // Start server
 app.listen(PORT, () => {
