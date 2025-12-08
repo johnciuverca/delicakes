@@ -5,7 +5,7 @@
       "description": "",
       "main": "index.js",
       "scripts": {
-            "start": "node server.js",
+            "start": "node server.js --ignore '**/.storage/*' ",
             "dev": "nodemon server.js --ignore '**/.storage/*' "
       },
       "keywords": [],
