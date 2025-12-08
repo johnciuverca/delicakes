@@ -1,5 +1,10 @@
+const remoteApiBaseUrl = 'http://192.168.0.118:3001';
+const localApiBaseUrl = 'http://localhost:3100';
+const apiBaseUrl = localApiBaseUrl;
+
+
 export function fetchAllTransactions() {
-      return fetch('http://localhost:3100/api/transactions')
+      return fetch(`${apiBaseUrl}/api/transactions`)
             .then(response => {
                   if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -9,7 +14,7 @@ export function fetchAllTransactions() {
 }
 
 export function insertTransaction(transactionInput) {
-      return fetch('http://localhost:3100/api/transactions', {
+      return fetch(`${apiBaseUrl}/api/transactions`, {
             method: 'POST',
             headers: {
                   'Content-Type': 'application/json'
@@ -24,7 +29,7 @@ export function insertTransaction(transactionInput) {
 }
 
 export function updateTransaction(inputId, properties) {
-      return fetch(`http://localhost:3100/api/transactions/${inputId}`, {
+      return fetch(`${apiBaseUrl}/api/transactions/${inputId}`, {
             method: 'PUT',
             headers: {
                   'Content-Type': 'application/json'
@@ -39,7 +44,7 @@ export function updateTransaction(inputId, properties) {
 }
 
 export function deleteTransaction(inputId) {
-      return fetch(`http://localhost:3100/api/transactions`, {
+      return fetch(`${apiBaseUrl}/api/transactions`, {
             method: 'DELETE',
             headers: {
                   'Content-Type': 'application/json'
