@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, '../mainUI/src/index.html'));
 });
 
-//
+// Serve the expense tracker page
 app.get('/expense-tracker', (req, res) => {
       res.sendFile(path.join(__dirname, '../expense-tracker/src/index.html'));
 });

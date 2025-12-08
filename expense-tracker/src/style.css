@@ -24,6 +24,46 @@ body {
       box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
+.navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 2px solid #ccc;
+      margin-bottom: 1.5rem;
+}
+
+.navbar .left-links {
+      display: flex;
+      gap: 2rem;
+}
+
+.navbar .right-links {
+      display: flex;
+}
+
+.navbar a {
+      color: #333;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background 0.3s, color 0.3s;
+      font-weight: 500;
+}
+
+.navbar a:hover {
+      background-color: #f0f0f0;
+      color: #007bff;
+}
+
+.navbar h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #1a202c;
+      font-weight: 600;
+      text-align: center;
+}
+
 h1 {
       text-align: center;
       color: #1a202c;
