@@ -14,9 +14,9 @@ RUN npm install
 # Copy source code
 COPY src ./src
 
-# Ensure .storage directory and transactions.json exist with empty array
+# Ensure .storage directory and transactions.json exist with correct initial content
 RUN mkdir -p .storage && \
-    echo "[]" > .storage/transactions.json
+    echo '{ "transactions": [], "nextId": 1 }' > .storage/transactions.json
 
 # Expose port (adjust if needed)
 EXPOSE 3000
