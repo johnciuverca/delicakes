@@ -151,15 +151,28 @@
                   const inputPassword = loginForm.psw.value;
                   const realPassword = knownCredentials.get(role);
 
-                  if (realPassword && inputPassword === realPassword) {
-                        if (role === 'admin') {
-                              window.location.href = '/expense-tracker';
-                        } else {
-                              window.location.href = '/';
+                  const response = fetch('/expense-tracker', {
+                        headers: {
+                              'x-auth-token': 'my-secret-token'
                         }
-                  } else {
-                        alert('Invalid role or password. Please try again.');
-                  }
+                  }).then(res => {
+                        if (res.redirected) {
+                              window.location.href = res.url;
+                        } else {
+                              alert('Invalid role or password. Please try again.');
+                              // console.error('Failed to access expense tracker');
+                        }
+                  });
+
+                  // if (realPassword && inputPassword === realPassword) {
+                  //       if (role === 'admin') {
+                  //             window.location.href = '/expense-tracker';
+                  //       } else {
+                  //             window.location.href = '/';
+                  //       }
+                  // } else {
+                  //       alert('Invalid role or password. Please try again.');
+                  // }
             });
       </script>
 </body>

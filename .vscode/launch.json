@@ -34,11 +34,38 @@
                         "run",
                         "dev"
                   ],
-                  "cwd": "${workspaceFolder}/api/src",
+                  "cwd": "${workspaceFolder}/api",
                   "console": "integratedTerminal",
                   "restart": true,
                   "skipFiles": [
                         "<node_internals>/**",
+                  ]
+            },
+            {
+                  "type": "node",
+                  "request": "launch",
+                  "name": "Run App (Dev)",
+                  "runtimeExecutable": "npm",
+                  "runtimeArgs": [
+                        "run",
+                        "dev"
+                  ],
+                  "cwd": "${workspaceFolder}/app",
+                  "console": "integratedTerminal",
+                  "restart": true,
+                  "skipFiles": [
+                        "<node_internals>/**",
+                  ]
+            },
+            {
+                  "type": "node",
+                  "request": "launch",
+                  "name": "Debug App Server",
+                  "program": "${workspaceFolder}/app/server.js",
+                  "cwd": "${workspaceFolder}/app",
+                  "console": "integratedTerminal",
+                  "skipFiles": [
+                        "<node_internals>/**"
                   ]
             }
       ]
