@@ -43,7 +43,6 @@ app.post('/expense-tracker', (req, res) => {
 
       const role = req.body.role;
       const inputPassword = req.body.psw;
-      // const authHeader = req.headers['x-auth-token'] || req.headers['authorization'];
       const realPassword = knownCredentials.get(role);
 
       if (inputPassword && inputPassword === realPassword) {
