@@ -1,12 +1,20 @@
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const knownCredentials = new Map([
+      ['admin', '0000'],
+      ['audit', '0000']
+]);
+
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Serve static files from the main folder
 app.use(express.static(path.join(__dirname, '../mainUI/src')));
@@ -21,20 +29,46 @@ app.get('/', (req, res) => {
 
 
 // const expenseTrackerStatic = express.static(path.join(__dirname, '../expense-tracker/src'));
-const expenseTrackerStatic = express.static(path.join(__dirname, '../expense-tracker/src'));
+const getExpenseTracker = express.static(path.join(__dirname, '../expense-tracker/src'));
+const authCookie = '123-fake-auth-cookie';
+
+app.post('/expense-tracker', (req, res) => {
+      const reqAuthCookie = req.cookies ? req.cookies['auth'] : null;
+      if (reqAuthCookie === authCookie) {
+            res.status(200).json({
+                  authCookie: authCookie
+            })
+            return;
+      }
+
+      const role = req.body.role;
+      const inputPassword = req.body.psw;
+      // const authHeader = req.headers['x-auth-token'] || req.headers['authorization'];
+      const realPassword = knownCredentials.get(role);
+
+      if (inputPassword && inputPassword === realPassword) {
+            res.status(200).json({
+                  authCookie: authCookie
+            })
+
+            // Set auth cookie
+            // res.cookie('auth', authCookie, { httpOnly: true });
+            // getExpenseTracker(req, res, next);
+      } else {
+            // res.status(401).redirect('/login');
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
+      }
+});
 
 // Serve static files from the expense-tracker folder (CSS, JS, etc.)
 app.use('/expense-tracker', (req, res, next) => {
-      // res.redirect('/login');
-      const authHeader = req.headers['x-auth-token'] || req.headers['authorization'];
-
-      if (authHeader && authHeader === 'my-secret-token') {
-            // User is authorized, serve the expense tracker
-            expenseTrackerStatic(req, res, next);
-      } else {
-            // User is not authorized, redirect to login
-            res.redirect('/login');
+      const reqAuthCookie = req.cookies ? req.cookies['auth'] : null;
+      if (reqAuthCookie === authCookie) {
+            getExpenseTracker(req, res, next);
+            return;
       }
+      res.redirect('/login');
 });
 
 // Serve login page     

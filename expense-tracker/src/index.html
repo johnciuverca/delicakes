@@ -20,7 +20,7 @@
                   </div>
                   <h1>Delicakes Expense Tracker</h1>
                   <div class="right-links">
-                        <a href="/pages/login.html">Logout</a>
+                        <button id="logout-btn">Logout</button>
                   </div>
             </nav>
 
@@ -67,6 +67,14 @@
                   </div>
             </div>
       </div>
+      <script>
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                  // Clear the auth cookie
+                  document.cookie = 'auth=; Max-Age=0; path=/';
+                  // Redirect to login page
+                  window.location.href = '/pages/login.html';
+            });
+      </script>
 </body>
 
 </html>

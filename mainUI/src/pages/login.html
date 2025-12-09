@@ -138,10 +138,6 @@
             </div>
       </div>
       <script>
-            const knownCredentials = new Map([
-                  ['admin', '0000'],
-                  ['audit', '0000']
-            ]);
             const loginForm = document.querySelector('.login-form');
 
             loginForm.addEventListener('submit', function (event) {
@@ -149,30 +145,33 @@
 
                   const role = document.getElementById('role').value;
                   const inputPassword = loginForm.psw.value;
-                  const realPassword = knownCredentials.get(role);
+
+                  console.log('Role:', role);
+                  console.log('Password:', inputPassword);
 
                   const response = fetch('/expense-tracker', {
+                        method: 'POST',
                         headers: {
+                              'Content-Type': 'application/json',
                               'x-auth-token': 'my-secret-token'
-                        }
+                        },
+                        body: JSON.stringify({
+                              role: role,
+                              psw: inputPassword
+                        })
                   }).then(res => {
-                        if (res.redirected) {
-                              window.location.href = res.url;
+                        if (!res.redirected && res.status === 200) {
+                              // Set auth cookie
+                              res.json().then(data => {
+                                    document.cookie = `auth=${data.authCookie}; path=/`;
+                                    window.location.href = '/expense-tracker';
+                              });
+                        } else if (res.status === 401) {
+                              alert('Unauthorized: Incorrect password.');
                         } else {
-                              alert('Invalid role or password. Please try again.');
-                              // console.error('Failed to access expense tracker');
+                              alert('Login failed. Please try again.');
                         }
                   });
-
-                  // if (realPassword && inputPassword === realPassword) {
-                  //       if (role === 'admin') {
-                  //             window.location.href = '/expense-tracker';
-                  //       } else {
-                  //             window.location.href = '/';
-                  //       }
-                  // } else {
-                  //       alert('Invalid role or password. Please try again.');
-                  // }
             });
       </script>
 </body>
