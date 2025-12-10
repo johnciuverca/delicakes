@@ -1,15 +1,10 @@
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const { authenticateUser } = require('./model/user');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-const knownCredentials = new Map([
-      ['admin', '0000'],
-      ['audit', '0000']
-]);
-
 
 // Middleware
 app.use(express.json());
@@ -43,9 +38,8 @@ app.post('/expense-tracker', (req, res) => {
 
       const role = req.body.role;
       const inputPassword = req.body.psw;
-      const realPassword = knownCredentials.get(role);
 
-      if (inputPassword && inputPassword === realPassword) {
+      if (authenticateUser(role, inputPassword)) {
             res.status(200).json({
                   authCookie: authCookie
             })
