@@ -144,6 +144,14 @@ function sortBy(event) {
       } else if (sortingCriteria === "reverseRecordDate") {
             // oldest
             sortingAlgorithm = (array) => sortByRecordDate(array, true);
+      } else if (sortingCriteria === "alphabetic") {
+            sortingAlgorithm = (array) => sortByAlphabet(array, true);
+      } else if (sortingCriteria === "reverseAlphabetic") {
+            sortingAlgorithm = (array) => sortByAlphabet(array, false);
+      } else if (sortingCriteria === "amount-desc") {
+            sortingAlgorithm = (array) => sorbByAmount(array, true);
+      } else if (sortingCriteria === "amount-asc") {
+            sortingAlgorithm = (array) => sorbByAmount(array, false);
       }
 
       updateTransactionList();
@@ -166,6 +174,20 @@ function sortByRecordDate(array, reverse) {
                   return 0;
             }
       });
+      return sortedArray;
+}
+
+function sortByAlphabet(array, reverse) {
+      const sortedArray = [...array].sort((a, b) => {
+            const sortDir = reverse === true ? 1 : -1;
+            const comp = a.description.localeCompare(b.description);
+            return comp * sortDir;
+      });
+      return sortedArray;
+}
+
+function sortByAmount(array, reverse) {
+
       return sortedArray;
 }
 
