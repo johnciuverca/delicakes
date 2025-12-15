@@ -149,11 +149,10 @@ function sortBy(event) {
       } else if (sortingCriteria === "reverseAlphabetic") {
             sortingAlgorithm = (array) => sortByAlphabet(array, false);
       } else if (sortingCriteria === "amount-desc") {
-            sortingAlgorithm = (array) => sorbByAmount(array, true);
+            sortingAlgorithm = (array) => sortByAmount(array, true);
       } else if (sortingCriteria === "amount-asc") {
-            sortingAlgorithm = (array) => sorbByAmount(array, false);
+            sortingAlgorithm = (array) => sortByAmount(array, false);
       }
-
       updateTransactionList();
 }
 
@@ -187,7 +186,11 @@ function sortByAlphabet(array, reverse) {
 }
 
 function sortByAmount(array, reverse) {
-
+      const sortedArray = [...array].sort((a, b) => {
+            const sortDir = reverse === true ? 1 : -1;
+            const comp = a.amount - b.amount;
+            return comp * sortDir;
+      });
       return sortedArray;
 }
 
