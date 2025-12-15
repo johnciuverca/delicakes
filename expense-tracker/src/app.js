@@ -17,7 +17,7 @@ const sortSelectEl = document.getElementById("sort");
 transactionFormEl.addEventListener("submit", addTransaction);
 sortSelectEl.addEventListener("change", sortBy);
 
-
+let sortingAlgorithm = sortByDefault;
 
 //  Global functions
 refreshExpenseTracker();
@@ -53,21 +53,9 @@ function updateSummary() {
 function updateTransactionList() {
       transactionListEl.innerHTML = "";
 
-      const sortingCriteria = sortSelectEl.value;
-
       const transactionsPromise = dataProvider.readAll();
       transactionsPromise.then(transactions => {
-            let sortedTransactions;
-            if (sortingCriteria === "creationDate") {
-                  //default
-                  sortedTransactions = [...transactions].reverse();
-            } else if (sortingCriteria === "recordDate") {
-                  //newest
-                  sortedTransactions = sortByRecordDate(transactions, false);
-
-            } else if (sortingCriteria === "reverseRecordDate") {
-                  sortedTransactions = sortByRecordDate(transactions, true);
-            }
+            const sortedTransactions = sortingAlgorithm(transactions);
             sortedTransactions.forEach(uiTransaction => {
                   const transactionEl = createTransactionElement(uiTransaction, removeTransaction, editTransaction);
                   transactionListEl.appendChild(transactionEl);
@@ -144,34 +132,40 @@ function removeTransaction(id) {
 }
 
 // Functions for Sorting
-function sortBy(_event) {
+function sortBy(event) {
+      const sortingCriteria = event.target.value;
+
+      if (sortingCriteria === "creationDate") {
+            // default
+            sortingAlgorithm = sortByDefault;
+      } else if (sortingCriteria === "recordDate") {
+            // newest
+            sortingAlgorithm = (array) => sortByRecordDate(array, false);
+      } else if (sortingCriteria === "reverseRecordDate") {
+            // oldest
+            sortingAlgorithm = (array) => sortByRecordDate(array, true);
+      }
+
       updateTransactionList();
+}
+
+function sortByDefault(array) {
+      return [...array].reverse();
 }
 
 function sortByRecordDate(array, reverse) {
       const sortedArray = [...array].sort((a, b) => {
             const [dateA, dateB] = getRecordDate(a, b);
-            if (!reverse) {
-                  if (dateA < dateB) {
-                        return 1;
-                  } else if (dateA > dateB) {
-                        return -1;
-                  } else {
-                        return 0;
-                  }
+            const sortDir = reverse === true ? -1 : 1;
+
+            if (dateA < dateB) {
+                  return sortDir;
+            } else if (dateA > dateB) {
+                  return -sortDir;
             } else {
-                  if (dateA < dateB) {
-                        return -1;
-                  } else if (dateA > dateB) {
-                        return 1;
-                  } else {
-                        return 0;
-                  }
+                  return 0;
             }
-
       });
-
-
       return sortedArray;
 }
 
