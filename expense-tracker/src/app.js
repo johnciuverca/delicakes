@@ -17,6 +17,8 @@ const sortSelectEl = document.getElementById("sort");
 transactionFormEl.addEventListener("submit", addTransaction);
 sortSelectEl.addEventListener("change", sortBy);
 
+
+
 //  Global functions
 refreshExpenseTracker();
 
@@ -61,19 +63,10 @@ function updateTransactionList() {
                   sortedTransactions = [...transactions].reverse();
             } else if (sortingCriteria === "recordDate") {
                   //newest
-                  sortedTransactions = [...transactions].sort((a, b) => {
-                        const [dayA, monthA, yearA] = a.recordDate.split("-").map(Number);
-                        const [dayB, monthB, yearB] = b.recordDate.split("-").map(Number);
-                        const dateA = new Date(yearA, monthA - 1, dayA);
-                        const dateB = new Date(yearB, monthB - 1, dayB);
-                        if (dateA < dateB) {
-                              return 1;
-                        } else if (dateA > dateB) {
-                              return -1;
-                        } else {
-                              return 0;
-                        }
-                  });
+                  sortedTransactions = sortByRecordDate(transactions, false);
+
+            } else if (sortingCriteria === "reverseRecordDate") {
+                  sortedTransactions = sortByRecordDate(transactions, true);
             }
             sortedTransactions.forEach(uiTransaction => {
                   const transactionEl = createTransactionElement(uiTransaction, removeTransaction, editTransaction);
@@ -153,4 +146,39 @@ function removeTransaction(id) {
 // Functions for Sorting
 function sortBy(_event) {
       updateTransactionList();
+}
+
+function sortByRecordDate(array, reverse) {
+      const sortedArray = [...array].sort((a, b) => {
+            const [dateA, dateB] = getRecordDate(a, b);
+            if (!reverse) {
+                  if (dateA < dateB) {
+                        return 1;
+                  } else if (dateA > dateB) {
+                        return -1;
+                  } else {
+                        return 0;
+                  }
+            } else {
+                  if (dateA < dateB) {
+                        return -1;
+                  } else if (dateA > dateB) {
+                        return 1;
+                  } else {
+                        return 0;
+                  }
+            }
+
+      });
+
+
+      return sortedArray;
+}
+
+function getRecordDate(a, b) {
+      const [dayA, monthA, yearA] = a.recordDate.split("-").map(Number);
+      const [dayB, monthB, yearB] = b.recordDate.split("-").map(Number);
+      const dateA = new Date(yearA, monthA - 1, dayA);
+      const dateB = new Date(yearB, monthB - 1, dayB);
+      return [dateA, dateB];
 }
