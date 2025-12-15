@@ -11,36 +11,18 @@ const transactionFormEl = document.getElementById("transaction-form");
 const descriptionEl = document.getElementById("description");
 const amountEl = document.getElementById("amount");
 const recordDateEl = document.getElementById("record-date");
+const sortSelectEl = document.getElementById("sort");
 
-transactionFormEl.addEventListener("submit", addTransaction)
 
+transactionFormEl.addEventListener("submit", addTransaction);
+sortSelectEl.addEventListener("change", sortBy);
+
+//  Global functions
 refreshExpenseTracker();
 
-// Functions
-function addTransaction(e) {
-      e.preventDefault();
-
-      dataProvider.insert({
-            description: descriptionEl.value.trim(),
-            amount: parseFloat(amountEl.value),
-            recordDate: recordDateEl.value
-      }).then(() => {
-            refreshExpenseTracker();
-      });
-      transactionFormEl.reset();
-}
-
-function updateTransactionList() {
-      transactionListEl.innerHTML = "";
-
-      const transactionsPromise = dataProvider.readAll();
-      transactionsPromise.then(transactions => {
-            const sortedTransactions = [...transactions].reverse();
-            sortedTransactions.forEach(uiTransaction => {
-                  const transactionEl = createTransactionElement(uiTransaction, removeTransaction, editTransaction);
-                  transactionListEl.appendChild(transactionEl);
-            });
-      });
+function refreshExpenseTracker() {
+      updateSummary();
+      updateTransactionList();
 }
 
 function updateSummary() {
@@ -64,6 +46,57 @@ function updateSummary() {
             incomeAmountEl.textContent = formatCurrency(income);
             expenseAmountEl.textContent = formatCurrency((expense));
       });
+}
+
+function updateTransactionList() {
+      transactionListEl.innerHTML = "";
+
+      const sortingCriteria = sortSelectEl.value;
+
+      const transactionsPromise = dataProvider.readAll();
+      transactionsPromise.then(transactions => {
+            let sortedTransactions;
+            if (sortingCriteria === "creationDate") {
+                  //default
+                  sortedTransactions = [...transactions].reverse();
+            } else if (sortingCriteria === "recordDate") {
+                  //newest
+                  sortedTransactions = [...transactions].sort((a, b) => {
+                        const [dayA, monthA, yearA] = a.recordDate.split("-").map(Number);
+                        const [dayB, monthB, yearB] = b.recordDate.split("-").map(Number);
+                        const dateA = new Date(yearA, monthA - 1, dayA);
+                        const dateB = new Date(yearB, monthB - 1, dayB);
+                        if (dateA < dateB) {
+                              return 1;
+                        } else if (dateA > dateB) {
+                              return -1;
+                        } else {
+                              return 0;
+                        }
+                  });
+            }
+            sortedTransactions.forEach(uiTransaction => {
+                  const transactionEl = createTransactionElement(uiTransaction, removeTransaction, editTransaction);
+                  transactionListEl.appendChild(transactionEl);
+            });
+      });
+}
+
+// Functions for Transactions
+function addTransaction(e) {
+      e.preventDefault();
+
+      const [year, month, day] = recordDateEl.value.split("-");
+      const formattedDate = `${day}-${month}-${year}`;
+
+      dataProvider.insert({
+            description: descriptionEl.value.trim(),
+            amount: parseFloat(amountEl.value),
+            recordDate: formattedDate,
+      }).then(() => {
+            refreshExpenseTracker();
+      });
+      transactionFormEl.reset();
 }
 
 function editTransaction(id, description, amount, recordDate) {
@@ -117,9 +150,7 @@ function removeTransaction(id) {
             });
 }
 
-function refreshExpenseTracker() {
-      updateSummary();
+// Functions for Sorting
+function sortBy(_event) {
       updateTransactionList();
 }
-
-

@@ -42,6 +42,15 @@
             <div class="main-content">
                   <div class="transaction-container">
                         <h2>Transactions</h2>
+                        <select name="Sort by: " id="sort">
+                              <option value="creationDate" selected>Default</option>
+                              <option value="recordDate">Newest</option>
+                              <option value="reverseRecordDate" disabled>Oldest</option>
+                              <option value="alphabetic" disabled>A -> Z</option>
+                              <option value="reverseAlphabetic" disabled>Z -> A</option>
+                              <option value="amount" disabled>Amount</option>
+                        </select>
+
                         <ul id="transaction-list">
                               <!-- Transactions will be dynamically added here -->
                         </ul>
