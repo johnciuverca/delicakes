@@ -17,7 +17,16 @@ const sortSelectEl = document.getElementById("sort");
 transactionFormEl.addEventListener("submit", addTransaction);
 sortSelectEl.addEventListener("change", sortBy);
 
+const localStorageSortingKey = "sorting";
 let sortingAlgorithm = sortByDefault;
+
+initializeSorting();
+
+function initializeSorting() {
+      const cachedSorting = localStorage.getItem(localStorageSortingKey);
+      sortSelectEl.value = cachedSorting ?? "creationDate";
+      sortSelectEl.dispatchEvent(new Event('change'));
+}
 
 //  Global functions
 refreshExpenseTracker();
@@ -134,26 +143,31 @@ function removeTransaction(id) {
 // Functions for Sorting
 function sortBy(event) {
       const sortingCriteria = event.target.value;
-
-      if (sortingCriteria === "creationDate") {
-            // default
-            sortingAlgorithm = sortByDefault;
-      } else if (sortingCriteria === "recordDate") {
-            // newest
-            sortingAlgorithm = (array) => sortByRecordDate(array, false);
-      } else if (sortingCriteria === "reverseRecordDate") {
-            // oldest
-            sortingAlgorithm = (array) => sortByRecordDate(array, true);
-      } else if (sortingCriteria === "alphabetic") {
-            sortingAlgorithm = (array) => sortByAlphabet(array, true);
-      } else if (sortingCriteria === "reverseAlphabetic") {
-            sortingAlgorithm = (array) => sortByAlphabet(array, false);
-      } else if (sortingCriteria === "amount-desc") {
-            sortingAlgorithm = (array) => sortByAmount(array, true);
-      } else if (sortingCriteria === "amount-asc") {
-            sortingAlgorithm = (array) => sortByAmount(array, false);
-      }
+      sortingAlgorithm = mapSortingAlgorithm(sortingCriteria);
+      localStorage.setItem(localStorageSortingKey, sortingCriteria);
       updateTransactionList();
+}
+
+function mapSortingAlgorithm(sortingOption) {
+      if (sortingOption === "creationDate") {
+            // default
+            return sortByDefault;
+      } else if (sortingOption === "recordDate") {
+            // newest
+            return (array) => sortByRecordDate(array, false);
+      } else if (sortingOption === "reverseRecordDate") {
+            // oldest
+            return (array) => sortByRecordDate(array, true);
+      } else if (sortingOption === "alphabetic") {
+            return (array) => sortByAlphabet(array, true);
+      } else if (sortingOption === "reverseAlphabetic") {
+            return (array) => sortByAlphabet(array, false);
+      } else if (sortingOption === "amount-desc") {
+            return (array) => sortByAmount(array, true);
+      } else if (sortingOption === "amount-asc") {
+            return (array) => sortByAmount(array, false);
+      }
+      throw new Error("Not implemented exception!");
 }
 
 function sortByDefault(array) {
