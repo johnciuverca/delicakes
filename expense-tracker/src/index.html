@@ -64,13 +64,13 @@
                                     <input type="text" id="description" placeholder="Enter description..." required />
                               </div>
                               <div class="form-group">
-                                    <label for="record-date">Record Date</label>
-                                    <input type="date" id="record-date" required />
-                              </div>
-                              <div class="form-group">
                                     <label for="amount">Amount</label>
                                     <input type="number" id="amount" placeholder="Enter amount..." required />
                                     <small>Use negative (-) for expenses</small>
+                              </div>
+                              <div class="form-group">
+                                    <label for="record-date">Record Date</label>
+                                    <input type="date" id="record-date" required />
                               </div>
                               <button type="submit">Add Transaction</button>
                         </form>
@@ -78,6 +78,18 @@
             </div>
       </div>
       <script>
+
+            document.addEventListener('DOMContentLoaded', () => {
+                  const recordDateInput = document.getElementById('record-date');
+                  if (recordDateInput) {
+                        const today = new Date();
+                        const yyyy = today.getFullYear();
+                        const mm = String(today.getMonth() + 1).padStart(2, '0');
+                        const dd = String(today.getDate()).padStart(2, '0');
+                        recordDateInput.value = `${yyyy}-${mm}-${dd}`;
+                  }
+            });
+
             document.getElementById('logout-btn').addEventListener('click', (e) => {
                   e.preventDefault();
                   // Clear the auth cookie
