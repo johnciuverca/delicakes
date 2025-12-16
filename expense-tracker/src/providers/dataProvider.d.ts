@@ -1,17 +1,9 @@
-export interface TransactionInput {
-      description: string;
-      amount: number;
-      recordDate?: string;
-}
-
-export interface Transaction extends TransactionInput {
-      id: string | number;
-}
+import type { Transaction, TransactionUI } from "../model/types.js";
 
 export interface DataProvider {
       readAll(): Promise<Transaction[]>;
-      insert(transactionInput: TransactionInput): Promise<void>;
-      update(id: string | number, inputData: Partial<TransactionInput>): Promise<any>;
+      insert(transactionInput: TransactionUI): Promise<void>;
+      update(id: string | number, inputData: Partial<TransactionUI>): Promise<any>;
       remove(id: string | number): Promise<void>;
 }
 

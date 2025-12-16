@@ -2,7 +2,7 @@ import { formatCurrency } from "../utils/helpers.js";
 
 /**
  * Creates a transaction HTML element
- * @param {{ description, amount }} transaction The transaction data
+ * @param {{ id: string, description: string, amount: number, recordDate: string }} transaction The transaction data
  * @param {Function} onRemove Callback function to call when the transaction is removed
  * @param {Function} editTransaction
  * @returns {HTMLElement} The transaction HTML element

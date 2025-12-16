@@ -1,7 +1,7 @@
 import { formatCurrency } from "./utils/helpers.js";
 import { dataProvider } from "./providers/dataProvider.js";
 import { createTransactionElement } from "./components/transaction.js";
-import type { Transaction } from "./types.js";
+import type { TransactionUI } from "./model/types.js";
 
 // Entry point
 const balanceEl = document.getElementById("balance") as HTMLElement;
@@ -19,7 +19,7 @@ transactionFormEl.addEventListener("submit", addTransaction);
 sortSelectEl.addEventListener("change", sortBy);
 
 const localStorageSortingKey = "sorting";
-let sortingAlgorithm = sortByDefault;
+let sortingAlgorithm: (<T extends TransactionUI>(array: Array<T>, reverse?: boolean) => Array<T>) = sortByDefault;
 
 initializeSorting();
 
@@ -65,9 +65,9 @@ function updateTransactionList() {
 
       const transactionsPromise = dataProvider.readAll();
       transactionsPromise.then(transactions => {
-            const sortedTransactions = sortingAlgorithm(transactions as Transaction[]);
-            sortedTransactions.forEach(uiTransaction => {
-                  const transactionEl = createTransactionElement(uiTransaction, removeTransaction, editTransaction);
+            const sortedTransactions = sortingAlgorithm(transactions);
+            sortedTransactions.forEach(x => {
+                  const transactionEl = createTransactionElement(x, removeTransaction, editTransaction);
                   transactionListEl.appendChild(transactionEl);
             });
       });
@@ -153,33 +153,35 @@ function sortBy(event: Event) {
       updateTransactionList();
 }
 
-function mapSortingAlgorithm(sortingOption: string) {
+function mapSortingAlgorithm<T extends TransactionUI>(
+      sortingOption: string
+): (array: Array<T>) => Array<T> {
       if (sortingOption === "creationDate") {
             // default
             return sortByDefault;
       } else if (sortingOption === "recordDate") {
             // newest
-            return (array: Transaction[]) => sortByRecordDate(array, false);
+            return (array: Array<T>) => sortByRecordDate(array, false);
       } else if (sortingOption === "reverseRecordDate") {
             // oldest
-            return (array: Transaction[]) => sortByRecordDate(array, true);
+            return (array: Array<T>) => sortByRecordDate(array, true);
       } else if (sortingOption === "alphabetic") {
-            return (array: Transaction[]) => sortByAlphabet(array, true);
+            return (array: Array<T>) => sortByAlphabet(array, true);
       } else if (sortingOption === "reverseAlphabetic") {
-            return (array: Transaction[]) => sortByAlphabet(array, false);
+            return (array: Array<T>) => sortByAlphabet(array, false);
       } else if (sortingOption === "amount-desc") {
-            return (array: Transaction[]) => sortByAmount(array, true);
+            return (array: Array<T>) => sortByAmount(array, true);
       } else if (sortingOption === "amount-asc") {
-            return (array: Transaction[]) => sortByAmount(array, false);
+            return (array: Array<T>) => sortByAmount(array, false);
       }
       throw new Error("Not implemented exception!");
 }
 
-function sortByDefault(array: Transaction[]) {
+function sortByDefault<T extends TransactionUI>(array: Array<T>): Array<T> {
       return [...array].reverse();
 }
 
-function sortByRecordDate(array: Transaction[], reverse: boolean) {
+function sortByRecordDate<T extends TransactionUI>(array: Array<T>, reverse: boolean) {
       const sortedArray = [...array].sort((a, b) => {
             const [dateA, dateB] = getRecordDate(a, b);
             const sortDir = reverse === true ? -1 : 1;
@@ -195,7 +197,7 @@ function sortByRecordDate(array: Transaction[], reverse: boolean) {
       return sortedArray;
 }
 
-function sortByAlphabet(array: Transaction[], reverse: boolean) {
+function sortByAlphabet<T extends TransactionUI>(array: Array<T>, reverse: boolean) {
       const sortedArray = [...array].sort((a, b) => {
             const sortDir = reverse === true ? 1 : -1;
             const comp = a.description.localeCompare(b.description);
@@ -204,7 +206,7 @@ function sortByAlphabet(array: Transaction[], reverse: boolean) {
       return sortedArray;
 }
 
-function sortByAmount(array: Transaction[], reverse: boolean) {
+function sortByAmount<T extends TransactionUI>(array: Array<T>, reverse: boolean) {
       const sortedArray = [...array].sort((a, b) => {
             const sortDir = reverse === true ? 1 : -1;
             const comp = a.amount - b.amount;
@@ -213,7 +215,7 @@ function sortByAmount(array: Transaction[], reverse: boolean) {
       return sortedArray;
 }
 
-function getRecordDate(a: Transaction, b: Transaction): [Date, Date] {
+function getRecordDate(a: TransactionUI, b: TransactionUI): [Date, Date] {
       const [dayA, monthA, yearA] = a.recordDate.split("-").map(Number);
       const [dayB, monthB, yearB] = b.recordDate.split("-").map(Number);
       const dateA = new Date(yearA!, monthA! - 1, dayA);
