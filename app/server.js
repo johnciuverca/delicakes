@@ -22,9 +22,8 @@ app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, '../mainUI/src/index.html'));
 });
 
-
 // const expenseTrackerStatic = express.static(path.join(__dirname, '../expense-tracker/src'));
-const getExpenseTracker = express.static(path.join(__dirname, '../expense-tracker/src'));
+const getExpenseTracker = express.static(path.join(__dirname, '../expense-tracker/dist'));
 const authCookie = '123-fake-auth-cookie';
 
 app.post('/expense-tracker', (req, res) => {

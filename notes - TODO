@@ -1,3 +1,5 @@
+- move sorting persistance from LS to query.(now keeps the state of the sorting)
+
 - check promises - then, catch ...
 - integrate data persistency support.
 - implement delete all. 

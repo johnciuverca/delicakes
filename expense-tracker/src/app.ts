@@ -1,17 +1,18 @@
 import { formatCurrency } from "./utils/helpers.js";
-import { createTransactionElement } from "./components/transaction.js";
 import { dataProvider } from "./providers/dataProvider.js";
+import { createTransactionElement } from "./components/transaction.js";
+import type { Transaction } from "./types.js";
 
 // Entry point
-const balanceEl = document.getElementById("balance");
-const incomeAmountEl = document.getElementById("income-amount");
-const expenseAmountEl = document.getElementById("expense-amount");
-const transactionListEl = document.getElementById("transaction-list");
-const transactionFormEl = document.getElementById("transaction-form");
-const descriptionEl = document.getElementById("description");
-const amountEl = document.getElementById("amount");
-const recordDateEl = document.getElementById("record-date");
-const sortSelectEl = document.getElementById("sort");
+const balanceEl = document.getElementById("balance") as HTMLElement;
+const incomeAmountEl = document.getElementById("income-amount") as HTMLElement;
+const expenseAmountEl = document.getElementById("expense-amount") as HTMLElement;
+const transactionListEl = document.getElementById("transaction-list") as HTMLUListElement;
+const transactionFormEl = document.getElementById("transaction-form") as HTMLFormElement;
+const descriptionEl = document.getElementById("description") as HTMLInputElement;
+const amountEl = document.getElementById("amount") as HTMLInputElement;
+const recordDateEl = document.getElementById("record-date") as HTMLInputElement;
+const sortSelectEl = document.getElementById("sort") as HTMLSelectElement;
 
 
 transactionFormEl.addEventListener("submit", addTransaction);
@@ -64,7 +65,7 @@ function updateTransactionList() {
 
       const transactionsPromise = dataProvider.readAll();
       transactionsPromise.then(transactions => {
-            const sortedTransactions = sortingAlgorithm(transactions);
+            const sortedTransactions = sortingAlgorithm(transactions as Transaction[]);
             sortedTransactions.forEach(uiTransaction => {
                   const transactionEl = createTransactionElement(uiTransaction, removeTransaction, editTransaction);
                   transactionListEl.appendChild(transactionEl);
@@ -73,7 +74,7 @@ function updateTransactionList() {
 }
 
 // Functions for Transactions
-function addTransaction(e) {
+function addTransaction(e: Event) {
       e.preventDefault();
 
       const [year, month, day] = recordDateEl.value.split("-");
@@ -89,8 +90,12 @@ function addTransaction(e) {
       transactionFormEl.reset();
 }
 
-function editTransaction(id, description, amount, recordDate) {
-
+function editTransaction(
+      id: string,
+      description: string,
+      amount: number,
+      recordDate: string
+) {
       let inputDescription = prompt("Enter new DESCRIPTION:", description);
       do {
             if (inputDescription === "") {
@@ -108,7 +113,7 @@ function editTransaction(id, description, amount, recordDate) {
       } while (inputRecordDate === "");
 
       let inputAmountValue;
-      let inputAmount = prompt("Enter new AMOUNT:", amount);
+      let inputAmount = prompt("Enter new AMOUNT:", amount.toString());
       do {
             if (inputAmount === null) return;
             inputAmountValue = parseFloat(inputAmount);
@@ -132,7 +137,7 @@ function editTransaction(id, description, amount, recordDate) {
       })
 }
 
-function removeTransaction(id) {
+function removeTransaction(id: string) {
       dataProvider
             .remove(id)
             .then(() => {
@@ -141,40 +146,40 @@ function removeTransaction(id) {
 }
 
 // Functions for Sorting
-function sortBy(event) {
-      const sortingCriteria = event.target.value;
+function sortBy(event: Event) {
+      const sortingCriteria = (event.target as HTMLSelectElement).value;
       sortingAlgorithm = mapSortingAlgorithm(sortingCriteria);
       localStorage.setItem(localStorageSortingKey, sortingCriteria);
       updateTransactionList();
 }
 
-function mapSortingAlgorithm(sortingOption) {
+function mapSortingAlgorithm(sortingOption: string) {
       if (sortingOption === "creationDate") {
             // default
             return sortByDefault;
       } else if (sortingOption === "recordDate") {
             // newest
-            return (array) => sortByRecordDate(array, false);
+            return (array: Transaction[]) => sortByRecordDate(array, false);
       } else if (sortingOption === "reverseRecordDate") {
             // oldest
-            return (array) => sortByRecordDate(array, true);
+            return (array: Transaction[]) => sortByRecordDate(array, true);
       } else if (sortingOption === "alphabetic") {
-            return (array) => sortByAlphabet(array, true);
+            return (array: Transaction[]) => sortByAlphabet(array, true);
       } else if (sortingOption === "reverseAlphabetic") {
-            return (array) => sortByAlphabet(array, false);
+            return (array: Transaction[]) => sortByAlphabet(array, false);
       } else if (sortingOption === "amount-desc") {
-            return (array) => sortByAmount(array, true);
+            return (array: Transaction[]) => sortByAmount(array, true);
       } else if (sortingOption === "amount-asc") {
-            return (array) => sortByAmount(array, false);
+            return (array: Transaction[]) => sortByAmount(array, false);
       }
       throw new Error("Not implemented exception!");
 }
 
-function sortByDefault(array) {
+function sortByDefault(array: Transaction[]) {
       return [...array].reverse();
 }
 
-function sortByRecordDate(array, reverse) {
+function sortByRecordDate(array: Transaction[], reverse: boolean) {
       const sortedArray = [...array].sort((a, b) => {
             const [dateA, dateB] = getRecordDate(a, b);
             const sortDir = reverse === true ? -1 : 1;
@@ -190,7 +195,7 @@ function sortByRecordDate(array, reverse) {
       return sortedArray;
 }
 
-function sortByAlphabet(array, reverse) {
+function sortByAlphabet(array: Transaction[], reverse: boolean) {
       const sortedArray = [...array].sort((a, b) => {
             const sortDir = reverse === true ? 1 : -1;
             const comp = a.description.localeCompare(b.description);
@@ -199,7 +204,7 @@ function sortByAlphabet(array, reverse) {
       return sortedArray;
 }
 
-function sortByAmount(array, reverse) {
+function sortByAmount(array: Transaction[], reverse: boolean) {
       const sortedArray = [...array].sort((a, b) => {
             const sortDir = reverse === true ? 1 : -1;
             const comp = a.amount - b.amount;
@@ -208,10 +213,10 @@ function sortByAmount(array, reverse) {
       return sortedArray;
 }
 
-function getRecordDate(a, b) {
+function getRecordDate(a: Transaction, b: Transaction): [Date, Date] {
       const [dayA, monthA, yearA] = a.recordDate.split("-").map(Number);
       const [dayB, monthB, yearB] = b.recordDate.split("-").map(Number);
-      const dateA = new Date(yearA, monthA - 1, dayA);
-      const dateB = new Date(yearB, monthB - 1, dayB);
+      const dateA = new Date(yearA!, monthA! - 1, dayA);
+      const dateB = new Date(yearB!, monthB! - 1, dayB);
       return [dateA, dateB];
 }
