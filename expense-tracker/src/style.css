@@ -393,3 +393,10 @@ button[type="submit"]:active {
             font-size: 1.8rem;
       }
 }
+
+#transactions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+}

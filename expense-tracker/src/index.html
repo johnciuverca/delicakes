@@ -41,16 +41,26 @@
 
             <div class="main-content">
                   <div class="transaction-container">
-                        <h2>Transactions</h2>
-                        <select name="Sort by: " id="sort">
-                              <option value="creationDate" selected>Default</option>
-                              <option value="recordDate">Newest</option>
-                              <option value="reverseRecordDate">Oldest</option>
-                              <option value="alphabetic">A -> Z</option>
-                              <option value="reverseAlphabetic">Z -> A</option>
-                              <option value="amount-desc">Amount Low To High</option>
-                              <option value="amount-asc">Amount High to Low</option>
-                        </select>
+                        <div id="transactions-bar">
+                              <h2>Transactions</h2>
+                              <div>
+                                    <p>Filter</p>
+                                    <input>
+                              </div>
+
+                              <div>
+                                    <p style>sort by:</p>
+                                    <select name="Sort by: " id="sort">
+                                          <option value="creationDate" selected>Default</option>
+                                          <option value="recordDate">Newest</option>
+                                          <option value="reverseRecordDate">Oldest</option>
+                                          <option value="alphabetic">A -> Z</option>
+                                          <option value="reverseAlphabetic">Z -> A</option>
+                                          <option value="amount-desc">Amount Low To High</option>
+                                          <option value="amount-asc">Amount High to Low</option>
+                                    </select>
+                              </div>
+                        </div>
 
                         <ul id="transaction-list">
                               <!-- Transactions will be dynamically added here -->
