@@ -1,7 +1,7 @@
 import { formatCurrency } from "./utils/helpers.js";
 import { dataProvider } from "./providers/dataProvider.js";
 import { createTransactionElement } from "./components/transaction.js";
-import type { TransactionUI } from "./model/types.js";
+import type { Transaction, TransactionUI } from "./model/types.js";
 
 // Entry point
 const balanceEl = document.getElementById("balance") as HTMLElement;
@@ -13,13 +13,18 @@ const descriptionEl = document.getElementById("description") as HTMLInputElement
 const amountEl = document.getElementById("amount") as HTMLInputElement;
 const recordDateEl = document.getElementById("record-date") as HTMLInputElement;
 const sortSelectEl = document.getElementById("sort") as HTMLSelectElement;
+const filterInputEl = document.getElementById("filter") as HTMLInputElement;
 
 
 transactionFormEl.addEventListener("submit", addTransaction);
-sortSelectEl.addEventListener("change", sortBy);
+sortSelectEl.addEventListener("change", sortingChangeHandler);
+filterInputEl.addEventListener("input", filterChangeHandler);
+
+const filterDefault = (array: Array<any>) => array;
 
 const localStorageSortingKey = "sorting";
 let sortingAlgorithm: (<T extends TransactionUI>(array: Array<T>, reverse?: boolean) => Array<T>) = sortByDefault;
+let filterAlgorithm: (<T extends TransactionUI>(array: Array<T>) => Array<T>) = filterDefault;
 
 initializeSorting();
 
@@ -66,7 +71,8 @@ function updateTransactionList() {
       const transactionsPromise = dataProvider.readAll();
       transactionsPromise.then(transactions => {
             const sortedTransactions = sortingAlgorithm(transactions);
-            sortedTransactions.forEach(x => {
+            const filteredTransactions = filterAlgorithm(sortedTransactions);
+            filteredTransactions.forEach(x => {
                   const transactionEl = createTransactionElement(x, removeTransaction, editTransaction);
                   transactionListEl.appendChild(transactionEl);
             });
@@ -146,7 +152,7 @@ function removeTransaction(id: string) {
 }
 
 // Functions for Sorting
-function sortBy(event: Event) {
+function sortingChangeHandler(event: Event) {
       const sortingCriteria = (event.target as HTMLSelectElement).value;
       sortingAlgorithm = mapSortingAlgorithm(sortingCriteria);
       localStorage.setItem(localStorageSortingKey, sortingCriteria);
@@ -221,4 +227,24 @@ function getRecordDate(a: TransactionUI, b: TransactionUI): [Date, Date] {
       const dateA = new Date(yearA!, monthA! - 1, dayA);
       const dateB = new Date(yearB!, monthB! - 1, dayB);
       return [dateA, dateB];
+}
+
+function filterChangeHandler(e: Event) {
+      console.log(filterInputEl.value);
+
+      const filterCriteria = filterInputEl.value;
+      if (filterCriteria.length > 0) {
+            filterAlgorithm = (transactions) => {
+                  const matchingResults: typeof transactions = [];
+                  transactions.forEach((transaction) => {
+                        if (transaction.description.includes(filterCriteria)) {
+                              matchingResults.push(transaction);
+                        }
+                  });
+                  return matchingResults;
+            };
+      } else {
+            filterAlgorithm = filterDefault;
+      }
+      updateTransactionList();
 }
