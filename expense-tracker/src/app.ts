@@ -15,7 +15,7 @@ const recordDateEl = document.getElementById("record-date") as HTMLInputElement;
 const sortSelectEl = document.getElementById("sort") as HTMLSelectElement;
 const filterInputEl = document.getElementById("filter") as HTMLInputElement;
 
-const debouncedFilterChangeHandler = debounce((e: Event) => filterChangeHandler(e), 800);
+const debouncedFilterChangeHandler = debounce((e: Event) => filterChangeHandler(e), 300);
 
 transactionFormEl.addEventListener("submit", addTransaction);
 sortSelectEl.addEventListener("change", sortingChangeHandler);
