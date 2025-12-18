@@ -1,4 +1,4 @@
-import { formatCurrency } from "./utils/helpers.js";
+import { debounce, formatCurrency } from "./utils/helpers.js";
 import { dataProvider } from "./providers/dataProvider.js";
 import { createTransactionElement } from "./components/transaction.js";
 import type { Transaction, TransactionUI } from "./model/types.js";
@@ -15,10 +15,11 @@ const recordDateEl = document.getElementById("record-date") as HTMLInputElement;
 const sortSelectEl = document.getElementById("sort") as HTMLSelectElement;
 const filterInputEl = document.getElementById("filter") as HTMLInputElement;
 
+const debouncedFilterChangeHandler = debounce((e: Event) => filterChangeHandler(e), 800);
 
 transactionFormEl.addEventListener("submit", addTransaction);
 sortSelectEl.addEventListener("change", sortingChangeHandler);
-filterInputEl.addEventListener("input", filterChangeHandler);
+filterInputEl.addEventListener("input", debouncedFilterChangeHandler);
 
 const filterDefault = (array: Array<any>) => array;
 
@@ -230,21 +231,21 @@ function getRecordDate(a: TransactionUI, b: TransactionUI): [Date, Date] {
 }
 
 function filterChangeHandler(e: Event) {
-      console.log(filterInputEl.value);
-
       const filterCriteria = filterInputEl.value;
       if (filterCriteria.length > 0) {
-            filterAlgorithm = (transactions) => {
-                  const matchingResults: typeof transactions = [];
-                  transactions.forEach((transaction) => {
-                        if (transaction.description.includes(filterCriteria)) {
-                              matchingResults.push(transaction);
-                        }
-                  });
-                  return matchingResults;
-            };
+            filterAlgorithm = transactions => filterByContains(filterCriteria, transactions);
       } else {
             filterAlgorithm = filterDefault;
       }
       updateTransactionList();
+}
+
+function filterByContains<T extends TransactionUI>(filterCriteria: string, transactions: Array<T>) {
+      const matchingResults: typeof transactions = [];
+      transactions.forEach((transaction) => {
+            if (transaction.description.toLowerCase().includes(filterCriteria.toLowerCase())) {
+                  matchingResults.push(transaction);
+            }
+      });
+      return matchingResults;
 }

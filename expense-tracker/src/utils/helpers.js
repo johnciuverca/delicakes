@@ -6,3 +6,12 @@ export function formatCurrency(number) {
             format(number);
 }
 
+export function debounce(callback, milis) {
+      let timeoutId;
+      return function () {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                  callback();
+            }, milis || 500);
+      }
+}
