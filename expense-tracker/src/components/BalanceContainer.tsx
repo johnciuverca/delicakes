@@ -6,9 +6,9 @@ type BalanceContainerProps = {
 };
 
 const BalanceContainer = ({ transactions }: BalanceContainerProps) => {
-      const sumOfAmounts = useMemo(() => {
-            return transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
-      }, [transactions]);
+      const sumOfAmounts = useMemo(() =>
+            transactions.reduce((acc, transaction) => acc + transaction.amount, 0)
+            , [transactions]);
 
       return (
             <div className="balance-container">
