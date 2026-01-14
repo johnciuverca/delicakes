@@ -3,7 +3,7 @@ import NavBar from "./NavBar";
 import BalanceContainer from "./BalanceContainer";
 import type { Transaction } from "../model/types";
 import { dataProvider } from "../providers/dataProvider";
-import NewComponent from "./NewComponent";
+import MainContent from "./MainContent";
 
 const MainContainer = () => {
       const [count, setCount] = useState(0);
@@ -20,14 +20,7 @@ const MainContainer = () => {
             <div className="container">
                   <NavBar />
                   <BalanceContainer transactions={transactions} />
-                  <button onClick={(e: any) => {
-                        e.preventDefault();
-                        setCount(count + 1);
-                  }}>
-                        Click me!
-                  </button>
-                  <div>Count is: {count}</div>
-                  <NewComponent />
+                  <MainContent />
             </div>
       );
 }
