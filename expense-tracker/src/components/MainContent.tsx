@@ -2,10 +2,10 @@ import React from "react";
 import TransactionContainer from "./TransactionContainer";
 import FormContainer from "./FormContainer";
 
-const MainContent = () => {
+const MainContent = (props: { transactions: any }) => {
       return (
             <div className="main-content">
-                  <TransactionContainer />
+                  <TransactionContainer transactions={props.transactions} />
                   <FormContainer />
             </div>
       );

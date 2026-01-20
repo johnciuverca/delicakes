@@ -11,6 +11,14 @@ const MainContainer = () => {
       const [transactions, setTransactions] = useState<Transaction[]>([]);
 
       useEffect(() => {
+            const timer = setInterval(() => {
+                  setCount((prevCount) => prevCount + 1);
+            }, 1000);
+
+            return () => clearInterval(timer);
+      }, []);
+
+      useEffect(() => {
             console.log("Component mounted!");
             dataProvider.readAll().then((records: Transaction[]) => {
                   setTransactions(records);
@@ -21,7 +29,7 @@ const MainContainer = () => {
             <div className="container">
                   <NavBar />
                   <BalanceContainer transactions={transactions} />
-                  <MainContent />
+                  <MainContent transactions={transactions} />
             </div>
       );
 }

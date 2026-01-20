@@ -1,7 +1,11 @@
 import React from "react";
 import { TransactionList } from "./TransactionList";
 
-const TransactionContainer = () => {
+interface TransactionContainerProps {
+      transactions: any[];
+}
+
+const TransactionContainer = (props: TransactionContainerProps) => {
       return (
             <div className="transaction-container">
                   <div id="transaction-bar">
@@ -25,7 +29,7 @@ const TransactionContainer = () => {
                         </div>
                   </div>
 
-                  <TransactionList />
+                  <TransactionList transactions={props.transactions} />
             </div >
       );
 };

@@ -3,18 +3,22 @@ import TransactionItem from "./TransactionItem";
 import type { Transaction } from "../model/types";
 import { dataProvider } from "../providers/dataProvider";
 
-export function TransactionList() {
-      const [transactions, setTransactions] = React.useState<Array<Transaction>>([]);
+interface TransactionListProps {
+      transactions: Array<Transaction>;
+}
 
-      useEffect(() => {
-            dataProvider.readAll().then(transactionArray => {
-                  setTransactions(transactionArray);
-            });
-      }, []);
+export function TransactionList(props: TransactionListProps) {
+      // const [transactions, setTransactions] = React.useState<Array<Transaction>>([]);
+
+      // useEffect(() => {
+      //       dataProvider.readAll().then(transactionArray => {
+      //             setTransactions(transactionArray);
+      //       });
+      // }, []);
 
       return (
             <ul id="transaction-list">
-                  {transactions.map((t) => {
+                  {props.transactions.map((t) => {
                         return (
                               <TransactionItem
                                     key={t.id}
