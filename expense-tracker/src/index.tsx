@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import MainContainer from './components/MainContainer';
 import './style.css';
 
-
 const App = () => {
       return <MainContainer />;
 }

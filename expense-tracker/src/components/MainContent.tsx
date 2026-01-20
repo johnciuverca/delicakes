@@ -4,10 +4,10 @@ import FormContainer from "./FormContainer";
 
 const MainContent = () => {
       return (
-            <>
+            <div className="main-content">
                   <TransactionContainer />
                   <FormContainer />
-            </>
+            </div>
       );
 };
 

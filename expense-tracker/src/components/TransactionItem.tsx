@@ -8,7 +8,7 @@ type TransactionProps = {
       editTransaction: (id: string, description: string, amount: number, recordDate: string) => void;
 };
 
-const Transaction = ({ transaction, onRemove, editTransaction }: TransactionProps) => {
+const TransactionItem = ({ transaction, onRemove, editTransaction }: TransactionProps) => {
       return (
             <li className={`transaction ${transaction.amount > 0 ? "income" : "expense"}`}>
                   <span>{transaction.description}</span>
@@ -26,4 +26,4 @@ const Transaction = ({ transaction, onRemove, editTransaction }: TransactionProp
       );
 };
 
-export default Transaction;
+export default TransactionItem;

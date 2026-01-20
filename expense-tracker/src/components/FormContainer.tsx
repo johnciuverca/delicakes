@@ -2,7 +2,7 @@ import React from "react";
 
 const FormContainer = () => {
       return (
-            <>
+            <div className="form-container">
                   <h2>Add Transaction</h2>
                   <form id="transaction-form">
                         <div className="form-group">
@@ -20,7 +20,7 @@ const FormContainer = () => {
                         </div>
                         <button type="submit">Add Transaction</button>
                   </form>
-            </>
+            </div>
 
       );
 };

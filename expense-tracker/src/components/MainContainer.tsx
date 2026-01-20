@@ -4,6 +4,7 @@ import BalanceContainer from "./BalanceContainer";
 import type { Transaction } from "../model/types";
 import { dataProvider } from "../providers/dataProvider";
 import MainContent from "./MainContent";
+import SandBox from "./SandBox";
 
 const MainContainer = () => {
       const [count, setCount] = useState(0);
