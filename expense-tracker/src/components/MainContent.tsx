@@ -11,5 +11,4 @@ const MainContent = (props: { transactions: any }) => {
       );
 };
 
-
 export default MainContent;
