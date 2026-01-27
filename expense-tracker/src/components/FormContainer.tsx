@@ -9,7 +9,7 @@ type FormContainerProps = {
 const FormContainer = (props: FormContainerProps) => {
       const [description, setDescription] = useState("");
       const [amount, setAmount] = useState("");
-      const [recordDate, setRecordDate] = useState("");
+      const [recordDate, setRecordDate] = useState(getCurrentDateISO());
 
       return (
             <div className="form-container">
@@ -52,6 +52,7 @@ const FormContainer = (props: FormContainerProps) => {
                                     required
                                     type="date"
                                     id="record-date"
+                                    value={recordDate}
                                     onChange={e => setRecordDate(e.target.value)} />
                         </div>
                         <button type="submit">Add Transaction</button>
@@ -59,5 +60,13 @@ const FormContainer = (props: FormContainerProps) => {
             </div >
       );
 };
+
+function getCurrentDateISO(): string {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+}
 
 export default FormContainer;
