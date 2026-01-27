@@ -1,6 +1,12 @@
 import React, { useState } from "react";
+import type { TransactionUI } from "../model/types";
+import { dataProvider } from "../providers/dataProvider";
 
-const FormContainer = () => {
+type FormContainerProps = {
+      refreshList: () => void;
+};
+
+const FormContainer = (props: FormContainerProps) => {
       const [description, setDescription] = useState("");
       const [amount, setAmount] = useState("");
       const [recordDate, setRecordDate] = useState("");
@@ -10,9 +16,16 @@ const FormContainer = () => {
                   <h2>Add Transaction</h2>
                   <form id="transaction-form" onSubmit={e => {
                         e.preventDefault();
-                        console.log("description: ", description);
-                        console.log("amount: ", amount);
-                        console.log("record-date: ", recordDate);
+
+                        const newTransactionUI: TransactionUI = {
+                              description: description,
+                              amount: parseFloat(amount),
+                              recordDate: recordDate
+                        };
+
+                        dataProvider.insert(newTransactionUI).then(() => {
+                              props.refreshList();
+                        });
                   }}>
                         <div className="form-group">
                               <label htmlFor="description">Description</label>
@@ -41,8 +54,7 @@ const FormContainer = () => {
                                     id="record-date"
                                     onChange={e => setRecordDate(e.target.value)} />
                         </div>
-                        <button type="submit"
-                        >Add Transaction</button>
+                        <button type="submit">Add Transaction</button>
                   </form>
             </div >
       );
