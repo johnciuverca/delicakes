@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import NavBar from "./NavBar";
 import BalanceContainer from "./BalanceContainer";
 import type { Transaction } from "../model/types";
@@ -9,11 +9,11 @@ const MainContainer = () => {
       const [count, setCount] = useState(0);
       const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-      function refreshList() {
+      const refreshList = useCallback(() => {
             dataProvider.readAll().then((records: Transaction[]) => {
                   setTransactions(records);
             });
-      }
+      }, []);
 
       useEffect(() => {
             const timer = setInterval(() => {
@@ -32,12 +32,9 @@ const MainContainer = () => {
             <div className="container">
                   <NavBar />
                   <BalanceContainer transactions={transactions} />
-                  <MainContent transactions={transactions} refreshList={() => {
-                        refreshList();
-                  }} />
+                  <MainContent transactions={transactions} refreshList={refreshList} />
             </div>
       );
 }
-
 
 export default MainContainer;

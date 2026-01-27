@@ -23,7 +23,7 @@ const FormContainer = (props: FormContainerProps) => {
                               recordDate: recordDate
                         };
 
-                        dataProvider.insert(newTransactionUI).then(() => {
+                        dataProvider.insert(newTransactionUI).then((result) => {
                               props.refreshList();
                         });
                   }}>
