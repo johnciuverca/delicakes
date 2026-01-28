@@ -15,6 +15,12 @@ const MainContainer = () => {
             });
       }, []);
 
+      const onRemove = useCallback((id: string) => {
+            dataProvider.remove(id).then(() => {
+                  refreshList();
+            });
+      }, [refreshList]);
+
       useEffect(() => {
             const timer = setInterval(() => {
                   setCount((prevCount) => prevCount + 1);
@@ -32,7 +38,7 @@ const MainContainer = () => {
             <div className="container">
                   <NavBar />
                   <BalanceContainer transactions={transactions} />
-                  <MainContent transactions={transactions} refreshList={refreshList} />
+                  <MainContent transactions={transactions} refreshList={refreshList} onRemove={onRemove} />
             </div>
       );
 }

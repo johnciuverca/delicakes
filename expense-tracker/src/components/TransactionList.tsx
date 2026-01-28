@@ -5,6 +5,7 @@ import { dataProvider } from "../providers/dataProvider";
 
 interface TransactionListProps {
       transactions: Array<Transaction>;
+      onRemove: (id: string) => void;
 }
 
 export function TransactionList(props: TransactionListProps) {
@@ -24,7 +25,7 @@ export function TransactionList(props: TransactionListProps) {
                                     key={t.id}
                                     transaction={t}
                                     editTransaction={() => { }}
-                                    onRemove={() => { }}
+                                    onRemove={props.onRemove}
                               />
                         );
                   })}

@@ -3,6 +3,7 @@ import { TransactionList } from "./TransactionList";
 
 interface TransactionContainerProps {
       transactions: any[];
+      onRemove: (id: string) => void;
 }
 
 const TransactionContainer = (props: TransactionContainerProps) => {
@@ -29,7 +30,7 @@ const TransactionContainer = (props: TransactionContainerProps) => {
                         </div>
                   </div>
 
-                  <TransactionList transactions={props.transactions} />
+                  <TransactionList transactions={props.transactions} onRemove={props.onRemove} />
             </div >
       );
 };
