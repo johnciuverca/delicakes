@@ -21,6 +21,12 @@ const MainContainer = () => {
             });
       }, [refreshList]);
 
+      const editTransaction = useCallback((id: string, description: string, amount: number, recordDate: string) => {
+            dataProvider.update(id, { description, amount, recordDate }).then(() => {
+                  refreshList();
+            });
+      }, [refreshList]);
+
       useEffect(() => {
             const timer = setInterval(() => {
                   setCount((prevCount) => prevCount + 1);
@@ -38,7 +44,7 @@ const MainContainer = () => {
             <div className="container">
                   <NavBar />
                   <BalanceContainer transactions={transactions} />
-                  <MainContent transactions={transactions} refreshList={refreshList} onRemove={onRemove} />
+                  <MainContent transactions={transactions} refreshList={refreshList} onRemove={onRemove} editTransaction={editTransaction} />
             </div>
       );
 }
