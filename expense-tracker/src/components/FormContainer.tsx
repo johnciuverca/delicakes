@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import type { TransactionUI } from "../model/types";
 import { dataProvider } from "../providers/dataProvider";
+import { useRefreshList } from "./MainContainer";
 
 type FormContainerProps = {
-      refreshList: () => void;
 };
 
 const FormContainer = (props: FormContainerProps) => {
       const [description, setDescription] = useState("");
       const [amount, setAmount] = useState("");
       const [recordDate, setRecordDate] = useState(getCurrentDateISO());
+      const refreshListCallback = useRefreshList();
+
+      const resetState = useCallback(() => {
+            setDescription("");
+            setAmount("");
+            setRecordDate(getCurrentDateISO());
+            console.log("Form state has been reset.");
+      }, []);
 
       return (
             <div className="form-container">
@@ -24,13 +32,15 @@ const FormContainer = (props: FormContainerProps) => {
                         };
 
                         dataProvider.insert(newTransactionUI).then((result) => {
-                              props.refreshList();
+                              refreshListCallback();
+                              resetState();
                         });
                   }}>
                         <div className="form-group">
                               <label htmlFor="description">Description</label>
                               <input
                                     required
+                                    value={description}
                                     type="text"
                                     id="description"
                                     placeholder="Enter description..."
@@ -40,6 +50,7 @@ const FormContainer = (props: FormContainerProps) => {
                               <label htmlFor="amount">Amount</label>
                               <input
                                     required
+                                    value={amount}
                                     type="number"
                                     id="amount"
                                     placeholder="Enter amount..."

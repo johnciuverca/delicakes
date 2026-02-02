@@ -1,14 +1,16 @@
 import React, { useCallback } from 'react';
 import { formatCurrency } from '../utils/helpers';
 import type { Transaction, TransactionUI } from '../model/types';
+import { useEditTransaction, useRemoveItem } from './MainContainer';
 
 type TransactionProps = {
       transaction: Transaction;
-      onRemove: (id: string) => void;
-      editTransaction: (id: string, description: string, amount: number, recordDate: string) => void;
 };
 
-const TransactionItem = ({ transaction, onRemove, editTransaction }: TransactionProps) => {
+const TransactionItem = ({ transaction }: TransactionProps) => {
+      const removeItemCallback = useRemoveItem();
+      const editTransactionCallback = useEditTransaction();
+      
 
       const editPrompt = useCallback(() => {
             let inputDescription = prompt("Enter new DESCRIPTION:", transaction.description);
@@ -43,7 +45,7 @@ const TransactionItem = ({ transaction, onRemove, editTransaction }: Transaction
                   recordDate: inputRecordDate,
                   amount: inputAmountValue
             } as TransactionUI;
-      }, [editTransaction, transaction]);
+      }, [editTransactionCallback, transaction]);
 
 
       return (
@@ -55,7 +57,7 @@ const TransactionItem = ({ transaction, onRemove, editTransaction }: Transaction
                         <button className='edit-btn' onClick={() => {
                               const editedTransaction = editPrompt();
                               if (!editedTransaction) return;
-                              editTransaction(
+                              editTransactionCallback(
                                     transaction.id,
                                     editedTransaction.description,
                                     editedTransaction.amount,
@@ -64,7 +66,7 @@ const TransactionItem = ({ transaction, onRemove, editTransaction }: Transaction
                         }}>
                               📝
                         </button>
-                        <button className='delete-btn' onClick={() => onRemove(transaction.id)}>
+                        <button className='delete-btn' onClick={() => removeItemCallback(transaction.id)}>
                               ❌
                         </button>
                   </span>
