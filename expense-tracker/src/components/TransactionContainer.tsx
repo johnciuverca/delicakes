@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { TransactionList } from "./TransactionList";
 
 interface TransactionContainerProps {
@@ -6,6 +6,12 @@ interface TransactionContainerProps {
 }
 
 const TransactionContainer = (props: TransactionContainerProps) => {
+      const [sortCriteria, setSortCriteria] = useState("creationDate");
+
+      const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+            setSortCriteria(event.target.value);
+      };
+
       return (
             <div className="transaction-container">
                   <div id="transaction-bar">
@@ -17,7 +23,12 @@ const TransactionContainer = (props: TransactionContainerProps) => {
 
                         <div>
                               <p>sort by:</p>
-                              <select name="Sort by:" id="sort">
+                              <select
+                                    name="Sort by:"
+                                    id="sort"
+                                    value={sortCriteria}
+                                    onChange={handleSortChange}
+                              >
                                     <option value="creationDate" selected>Default</option>
                                     <option value="recordDate">Newest</option>
                                     <option value="reverseRecordDate">Oldest</option>
@@ -29,7 +40,7 @@ const TransactionContainer = (props: TransactionContainerProps) => {
                         </div>
                   </div>
 
-                  <TransactionList transactions={props.transactions} />
+                  <TransactionList transactions={props.transactions} sortBy={sortCriteria} />
             </div >
       );
 };
