@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import type { TransactionUI } from "../model/types";
 import { dataProvider } from "../providers/dataProvider";
 import { useRefreshList } from "./MainContainer";
@@ -28,7 +28,7 @@ const FormContainer = (props: FormContainerProps) => {
                         const newTransactionUI: TransactionUI = {
                               description: description,
                               amount: parseFloat(amount),
-                              recordDate: recordDate
+                              recordDate: formatDateToDDMMYYYY(recordDate)
                         };
 
                         dataProvider.insert(newTransactionUI).then((result) => {
@@ -78,6 +78,11 @@ function getCurrentDateISO(): string {
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const day = String(now.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
+}
+
+function formatDateToDDMMYYYY(isoDate: string): string {
+      const [year, month, day] = isoDate.split("-");
+      return `${day}-${month}-${year}`;
 }
 
 export default FormContainer;

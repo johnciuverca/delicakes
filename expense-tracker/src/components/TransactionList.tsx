@@ -26,22 +26,46 @@ export function TransactionList(props: TransactionListProps) {
 function sortTransactions(transactions: Transaction[], sortBy: string): Transaction[] {
       if (sortBy === "creationDate") return [...transactions].reverse();
       if (sortBy === "recordDate") {
-            return [...transactions].sort((a, b) => new Date(b.recordDate).getTime() - new Date(a.recordDate).getTime());
+            return sortByCriteria(transactions, (a, b) => new Date(b.recordDate).getTime() - new Date(a.recordDate).getTime());
       }
       if (sortBy === "reverseRecordDate") {
-            return [...transactions].sort((a, b) => new Date(a.recordDate).getTime() - new Date(b.recordDate).getTime());
+            return sortByCriteria(transactions, (a, b) => new Date(a.recordDate).getTime() - new Date(b.recordDate).getTime());
       }
       if (sortBy === "alphabetic") {
-            return [...transactions].sort((a, b) => a.description.localeCompare(b.description));
+            return sortByCriteria(transactions, (a, b) => a.description.localeCompare(b.description));
       }
       if (sortBy === "reverseAlphabetic") {
-            return [...transactions].sort((a, b) => b.description.localeCompare(a.description));
+            return sortByCriteria(transactions, (a, b) => b.description.localeCompare(a.description));
       }
       if (sortBy === "amount-desc") {
-            return [...transactions].sort((a, b) => b.amount - a.amount);
+            return sortByCriteria(transactions, (a, b) => b.amount - a.amount);
       }
       if (sortBy === "amount-asc") {
-            return [...transactions].sort((a, b) => a.amount - b.amount);
+            return sortByCriteria(transactions, (a, b) => a.amount - b.amount);
       }
       return transactions;
+}
+
+function sortByCriteria(
+      transactions: Array<Transaction>,
+      compareFn: (a: Transaction, b: Transaction) => number
+): Array<Transaction> {
+      return [...transactions]
+            .map(t => {
+                  const [day, month, year] = t.recordDate.split("-");
+                  const formattedDate = `${year}-${month}-${day}`;
+                  return {
+                        ...t,
+                        recordDate: formattedDate.toString(),
+                  };
+            })
+            .sort(compareFn)
+            .map(t => {
+                  const [year, month, day] = t.recordDate.split("-")
+                  const formattedDate = `${day}-${month}-${year}`
+                  return {
+                        ...t,
+                        recordDate: formattedDate.toString(),
+                  }
+            });
 }
