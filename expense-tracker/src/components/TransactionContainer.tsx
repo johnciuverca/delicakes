@@ -7,10 +7,15 @@ interface TransactionContainerProps {
 
 const TransactionContainer = (props: TransactionContainerProps) => {
       const [sortCriteria, setSortCriteria] = useState("creationDate");
+      const [filterCriteria, setFilterCriteria] = useState("");
 
       const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
             setSortCriteria(event.target.value);
       };
+
+      const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+            setFilterCriteria(event.target.value);
+      }
 
       return (
             <div className="transaction-container">
@@ -18,7 +23,11 @@ const TransactionContainer = (props: TransactionContainerProps) => {
                         <h2>Transactions</h2>
                         <div>
                               <p>Filter</p>
-                              <input id="filter"></input>
+                              <input
+                                    id="filter"
+                                    value={filterCriteria}
+                                    onChange={handleFilterChange}
+                              />
                         </div>
 
                         <div>
@@ -40,7 +49,7 @@ const TransactionContainer = (props: TransactionContainerProps) => {
                         </div>
                   </div>
 
-                  <TransactionList transactions={props.transactions} sortBy={sortCriteria} />
+                  <TransactionList transactions={props.transactions} filterBy={filterCriteria} sortBy={sortCriteria} />
             </div >
       );
 };
