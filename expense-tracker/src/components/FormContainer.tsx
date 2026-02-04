@@ -16,7 +16,6 @@ const FormContainer = (props: FormContainerProps) => {
             setDescription("");
             setAmount("");
             setRecordDate(getCurrentDateISO());
-            console.log("Form state has been reset.");
       }, []);
 
       return (

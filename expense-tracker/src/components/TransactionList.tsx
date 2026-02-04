@@ -23,49 +23,39 @@ export function TransactionList(props: TransactionListProps) {
       );
 }
 
+const sortingStrategies = new Map<string, (a: Transaction, b: Transaction) => number>([
+      ["creationDate", (_a, _b) => -1],
+      ["recordDate", (a, b) => new Date(b.recordDate).getTime() - new Date(a.recordDate).getTime()],
+      ["reverseRecordDate", (a, b) => new Date(a.recordDate).getTime() - new Date(b.recordDate).getTime()],
+      ["alphabetic", (a, b) => a.description.localeCompare(b.description)],
+      ["reverseAlphabetic", (a, b) => b.description.localeCompare(a.description)],
+      ["amount-desc", (a, b) => b.amount - a.amount],
+      ["amount-asc", (a, b) => a.amount - b.amount],
+]);
+
 function sortTransactions(transactions: Transaction[], sortBy: string): Transaction[] {
-      if (sortBy === "creationDate") return [...transactions].reverse();
-      if (sortBy === "recordDate") {
-            return sortByCriteria(transactions, (a, b) => new Date(b.recordDate).getTime() - new Date(a.recordDate).getTime());
-      }
-      if (sortBy === "reverseRecordDate") {
-            return sortByCriteria(transactions, (a, b) => new Date(a.recordDate).getTime() - new Date(b.recordDate).getTime());
-      }
-      if (sortBy === "alphabetic") {
-            return sortByCriteria(transactions, (a, b) => a.description.localeCompare(b.description));
-      }
-      if (sortBy === "reverseAlphabetic") {
-            return sortByCriteria(transactions, (a, b) => b.description.localeCompare(a.description));
-      }
-      if (sortBy === "amount-desc") {
-            return sortByCriteria(transactions, (a, b) => b.amount - a.amount);
-      }
-      if (sortBy === "amount-asc") {
-            return sortByCriteria(transactions, (a, b) => a.amount - b.amount);
+      const strategy = sortingStrategies.get(sortBy);
+      if (strategy) {
+            return applySortingStrategy(transactions, strategy);
       }
       return transactions;
 }
 
-function sortByCriteria(
+function applySortingStrategy(
       transactions: Array<Transaction>,
-      compareFn: (a: Transaction, b: Transaction) => number
+      sortingStrategy: (a: Transaction, b: Transaction) => number
 ): Array<Transaction> {
-      return [...transactions]
-            .map(t => {
-                  const [day, month, year] = t.recordDate.split("-");
-                  const formattedDate = `${year}-${month}-${day}`;
-                  return {
-                        ...t,
-                        recordDate: formattedDate.toString(),
-                  };
-            })
-            .sort(compareFn)
-            .map(t => {
-                  const [year, month, day] = t.recordDate.split("-")
-                  const formattedDate = `${day}-${month}-${year}`
-                  return {
-                        ...t,
-                        recordDate: formattedDate.toString(),
-                  }
-            });
+      return [...transactions].sort((a, b) => {
+            var aFormatted = formatDateToYYYYMMDD(a.recordDate);
+            var bFormatted = formatDateToYYYYMMDD(b.recordDate);
+            return sortingStrategy(
+                  { ...a, recordDate: aFormatted },
+                  { ...b, recordDate: bFormatted }
+            );
+      });
+}
+
+function formatDateToYYYYMMDD(date: string): string {
+      const [day, month, year] = date.split("-");
+      return `${year}-${month}-${day}`;
 }
