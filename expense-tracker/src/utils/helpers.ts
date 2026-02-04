@@ -1,13 +1,12 @@
-export function formatCurrency(number) {
+export function formatCurrency(amount: number): string {
       return new Intl.NumberFormat('ro-RO', {
             style: 'currency',
             currency: 'RON'
-      }).
-            format(number);
+      }).format(amount);
 }
 
-export function debounce(callback, milis) {
-      let timeoutId;
+export function debounce(callback: () => void, milis?: number): () => void {
+      let timeoutId: number;
       return function () {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
