@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { TransactionList } from "./TransactionList";
 
 interface TransactionContainerProps {
@@ -9,13 +9,14 @@ const TransactionContainer = (props: TransactionContainerProps) => {
       const [sortCriteria, setSortCriteria] = useState("creationDate");
       const [filterCriteria, setFilterCriteria] = useState("");
 
-      const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-            setSortCriteria(event.target.value);
-      };
+      const handleSortChange = useCallback(() =>
+            (event: React.ChangeEvent<HTMLSelectElement>) => {
+                  setSortCriteria(event.target.value);
+            }, []);
 
-      const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const handleFilterChange = useCallback(() => (event: React.ChangeEvent<HTMLInputElement>) => {
             setFilterCriteria(event.target.value);
-      }
+      }, []);
 
       return (
             <div className="transaction-container">

@@ -37,7 +37,6 @@ export const useEditTransaction = () => {
 };
 
 const MainContainer = () => {
-      const [count, setCount] = useState(0);
       const [transactions, setTransactions] = useState<Transaction[]>([]);
 
       const refreshList = useCallback(() => {
@@ -57,19 +56,6 @@ const MainContainer = () => {
                   refreshList();
             });
       }, [refreshList]);
-
-      useEffect(() => {
-            const timer = setInterval(() => {
-                  setCount((prevCount) => prevCount + 1);
-            }, 1000);
-
-            return () => clearInterval(timer);
-      }, []);
-
-      useEffect(() => {
-            console.log("Component mounted!");
-            refreshList();
-      }, []);
 
       return (
             <AppContext value={{
