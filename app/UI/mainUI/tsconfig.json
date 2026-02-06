@@ -8,13 +8,13 @@
             ],
             "moduleResolution": "Bundler",
             "strict": true,
-            "rootDir": "../app/UI/mainUI/src/tsI/mainUI/src/tsrc/expense-tracker/mainUI/src/ts",
-            "outDir": "../app/UI/mainUI/src/scriptsnUI/src/scriptspense-tracker/mainUI/src/scripts",
+            "rootDir": "../app/UI/mainUI/src/tsrc/expense-tracker/mainUI/src/ts",
+            "outDir": "../app/UI/mainUI/src/scriptspense-tracker/mainUI/src/scripts",
             "sourceMap": true,
             "noEmitOnError": true,
             "skipLibCheck": true
       },
       "include": [
-            "../app/UI/mainUI/src/ts/**/*.tsUI/src/ts/**/*.tsense-tracker/mainUI/src/ts/**/*.ts"
+            "../app/UI/mainUI/src/ts/**/*.tsense-tracker/mainUI/src/ts/**/*.ts"
       ]
 }

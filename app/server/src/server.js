@@ -12,18 +12,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Serve static files from the main folder
-app.use(express.static(path.join(__dirname, '../mainUI/src')));
+app.use(express.static(path.join(__dirname, '../../UI/mainUI/src')));
 
 // Serve images from assets folder
-app.use('/assets', express.static(path.join(__dirname, '../mainUI/assets')));
+app.use('/assets', express.static(path.join(__dirname, '../../UI/mainUI/assets')));
 
 // Serve the main page
 app.get('/', (req, res) => {
-      res.sendFile(path.join(__dirname, '../mainUI/src/index.html'));
+      res.sendFile(path.join(__dirname, '../../UI/mainUI/src/index.html'));
 });
 
 // const expenseTrackerStatic = express.static(path.join(__dirname, '../expense-tracker/src'));
-const getExpenseTracker = express.static(path.join(__dirname, '../expense-tracker/dist'));
+const getExpenseTracker = express.static(path.join(__dirname, '../../UI/expense-tracker/dist'));
 const authCookie = '123-fake-auth-cookie';
 
 app.post('/expense-tracker', (req, res) => {
@@ -65,7 +65,7 @@ app.use('/expense-tracker', (req, res, next) => {
 
 // Serve login page     
 app.get('/login', (req, res) => {
-      res.sendFile(path.join(__dirname, '../mainUI/src/pages/login.html'));
+      res.sendFile(path.join(__dirname, '../../UI/mainUI/src/pages/login.html'));
 });
 
 // API routes

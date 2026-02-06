@@ -7,9 +7,9 @@
       "scripts": {
             "test": "echo \"Error: no test specified\" && exit 1",
             "build": "webpack --mode production",
-            "start": "node ../app/server.js",
-            "app-server": "cd ../app && nodemon server.js watch",
-            "data-api": "cd ../api && nodemon ./src/server.js watch",
+            "start": "node ../../server/src/server.js",
+            "app-server": "cd ../../server && nodemon ./src/server.js watch",
+            "data-api": "cd ../../api && nodemon ./src/server.js watch",
             "watch": "nodemon --watch src --ext js,jsx,ts,tsx,html,css --exec \"npm run build\""
       },
       "keywords": [],
