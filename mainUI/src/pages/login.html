@@ -59,42 +59,7 @@
                   </form>
             </div>
       </div>
-      <script>
-            const loginForm = document.querySelector('.login-form');
-
-            loginForm.addEventListener('submit', function (event) {
-                  event.preventDefault();
-
-                  const role = document.getElementById('role').value;
-                  const inputPassword = loginForm.psw.value;
-
-                  console.log('Role:', role);
-                  console.log('Password:', inputPassword);
-
-                  const response = fetch('/expense-tracker', {
-                        method: 'POST',
-                        headers: {
-                              'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                              role: role,
-                              psw: inputPassword
-                        })
-                  }).then(res => {
-                        if (!res.redirected && res.status === 200) {
-                              // Set auth cookie
-                              res.json().then(data => {
-                                    document.cookie = `auth=${data.authCookie}; path=/`;
-                                    window.location.href = '/expense-tracker';
-                              });
-                        } else if (res.status === 401) {
-                              alert('Unauthorized: Incorrect password.');
-                        } else {
-                              alert('Login failed. Please try again.');
-                        }
-                  });
-            });
-      </script>
+      <script type="module" src="../scripts/pages/login.js"></script>
 </body>
 
 </html>
