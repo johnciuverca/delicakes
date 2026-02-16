@@ -19,6 +19,7 @@ if [[ 0 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[expense-tracker] runn
 cd "${SERVER_DIR}"
 echo "[watch] starting mainUI + expense-tracker watchers..."
 trap 'kill 0' INT TERM
+export ENVIRONMENT="PROD"
 npm run mainui:watch &
 npm run expense-tracker:watch &
 wait

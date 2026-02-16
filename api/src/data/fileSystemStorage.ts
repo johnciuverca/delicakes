@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 export type Transaction = {
@@ -13,8 +14,28 @@ type DbState = {
   nextId: number;
 };
 
+const ENVIRONMENT = process.env.ENVIRONMENT || "DEV";
+
 const serverRoot = process.cwd();
-const storageDir = path.join(serverRoot, ".storage");
+
+function getProdStorageDir(): string {
+  if (process.platform === "darwin") {
+    return path.join(os.homedir(), "Library", "Application Support", "delicakes", ".storage");
+  }
+
+  if (process.platform === "win32") {
+    const appData = process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming");
+    return path.join(appData, "delicakes", ".storage");
+  }
+
+  const xdgDataHome = process.env.XDG_DATA_HOME || path.join(os.homedir(), ".local", "share");
+  return path.join(xdgDataHome, "delicakes", ".storage");
+}
+
+const storageDir = ENVIRONMENT === "PROD"
+  ? getProdStorageDir()
+  : path.join(serverRoot, ".storage");
+
 const storageFile = path.join(storageDir, "transactions.json");
 
 async function ensureStorageReady(): Promise<void> {

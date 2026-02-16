@@ -32,21 +32,45 @@ WATCH_WIN_FILE="${PID_DIR}/terminal-watch.id"
 
 WITH_WATCH=0
 NO_INSTALL=0
-for arg in "$@"; do
-  case "$arg" in
+START_ENVIRONMENT="${ENVIRONMENT:-DEV}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
     --watch)
       WITH_WATCH=1
+      shift
       ;;
     --no-install)
       NO_INSTALL=1
+      shift
+      ;;
+    --env|--environment)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for $1" >&2
+        echo "Usage: $(basename "$0") [--watch] [--no-install] [--env DEV|PROD]" >&2
+        exit 2
+      fi
+      START_ENVIRONMENT="$2"
+      shift 2
+      ;;
+    --env=*|--environment=*)
+      START_ENVIRONMENT="${1#*=}"
+      shift
       ;;
     *)
-      echo "Unknown arg: $arg" >&2
-      echo "Usage: $(basename "$0") [--watch] [--no-install]" >&2
+      echo "Unknown arg: $1" >&2
+      echo "Usage: $(basename "$0") [--watch] [--no-install] [--env DEV|PROD]" >&2
       exit 2
       ;;
   esac
 done
+
+START_ENVIRONMENT="$(echo "$START_ENVIRONMENT" | tr '[:lower:]' '[:upper:]')"
+if [[ "$START_ENVIRONMENT" != "DEV" && "$START_ENVIRONMENT" != "PROD" ]]; then
+  echo "Invalid environment: $START_ENVIRONMENT" >&2
+  echo "Allowed values: DEV, PROD" >&2
+  exit 2
+fi
 
 mkdir -p "$PID_DIR"
 
@@ -134,19 +158,20 @@ wait_for_file() {
 }
 
 echo "Opening Terminal windows and starting servers..."
+echo "Environment: ${START_ENVIRONMENT}"
 
 # Window 1: (optional) install + build Expense Tracker UI -> start app server
 APP_LAUNCHER="${LAUNCH_DIR}/01-app-build-app-server.command"
-write_launcher "$APP_LAUNCHER" "ROOT_DIR=\"${ROOT_DIR}\"\nPID_DIR=\"${PID_DIR}\"\nSERVER_DIR=\"${SERVER_DIR}\"\nEXPENSE_TRACKER_DIR=\"${EXPENSE_TRACKER_DIR}\"\nMAINUI_DIR=\"${MAINUI_DIR}\"\nmkdir -p \"\${PID_DIR}\"\necho \"\$(tty)\" > \"\${PID_DIR}/app-server.tty\"\necho \"\$\$\" > \"\${PID_DIR}/app-server.pid\"\n\n# Ensure deps (server + UIs)\ncd \"\${SERVER_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[app/server] running npm install...\"; npm install; fi\n\ncd \"\${MAINUI_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[mainUI] running npm install...\"; npm install; fi\n\ncd \"\${EXPENSE_TRACKER_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[expense-tracker] running npm install...\"; npm install; fi\n\n# Build UIs (so app/server can serve them)\ncd \"\${SERVER_DIR}\"\necho \"[mainUI] running npm run mainui:build...\"\nnpm run mainui:build\necho \"[expense-tracker] running npm run expense-tracker:build...\"\nnpm run expense-tracker:build\n\n# Start the main app server on :3000\necho \"[app/server] starting dev server on :3000...\"\nexec npm run app:dev\n"
+write_launcher "$APP_LAUNCHER" "ROOT_DIR=\"${ROOT_DIR}\"\nPID_DIR=\"${PID_DIR}\"\nSERVER_DIR=\"${SERVER_DIR}\"\nEXPENSE_TRACKER_DIR=\"${EXPENSE_TRACKER_DIR}\"\nMAINUI_DIR=\"${MAINUI_DIR}\"\nmkdir -p \"\${PID_DIR}\"\necho \"\$(tty)\" > \"\${PID_DIR}/app-server.tty\"\necho \"\$\$\" > \"\${PID_DIR}/app-server.pid\"\n\n# Ensure deps (server + UIs)\ncd \"\${SERVER_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[app/server] running npm install...\"; npm install; fi\n\ncd \"\${MAINUI_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[mainUI] running npm install...\"; npm install; fi\n\ncd \"\${EXPENSE_TRACKER_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[expense-tracker] running npm install...\"; npm install; fi\n\n# Build UIs (so app/server can serve them)\ncd \"\${SERVER_DIR}\"\necho \"[mainUI] running npm run mainui:build...\"\nnpm run mainui:build\necho \"[expense-tracker] running npm run expense-tracker:build...\"\nnpm run expense-tracker:build\n\n# Start the main app server on :3000\necho \"[app/server] starting dev server on :3000...\"\nexport ENVIRONMENT=\"${START_ENVIRONMENT}\"\nexec npm run app:dev\n"
 
 # Window 2: API server on :3100
 DATA_LAUNCHER="${LAUNCH_DIR}/02-data-api.command"
-write_launcher "$DATA_LAUNCHER" "ROOT_DIR=\"${ROOT_DIR}\"\nPID_DIR=\"${PID_DIR}\"\nSERVER_DIR=\"${SERVER_DIR}\"\nAPI_DIR=\"${API_DIR}\"\nmkdir -p \"\${PID_DIR}\"\necho \"\$(tty)\" > \"\${PID_DIR}/data-api.tty\"\necho \"\$\$\" > \"\${PID_DIR}/data-api.pid\"\n\n# Ensure api deps\ncd \"\${API_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[api] running npm install...\"; npm install; fi\n\n# Start api via the main entrypoint (app/server)\ncd \"\${SERVER_DIR}\"\necho \"[api] starting dev server on :3100...\"\nexec npm run api:dev\n"
+write_launcher "$DATA_LAUNCHER" "ROOT_DIR=\"${ROOT_DIR}\"\nPID_DIR=\"${PID_DIR}\"\nSERVER_DIR=\"${SERVER_DIR}\"\nAPI_DIR=\"${API_DIR}\"\nmkdir -p \"\${PID_DIR}\"\necho \"\$(tty)\" > \"\${PID_DIR}/data-api.tty\"\necho \"\$\$\" > \"\${PID_DIR}/data-api.pid\"\n\n# Ensure api deps\ncd \"\${API_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[api] running npm install...\"; npm install; fi\n\n# Start api via the main entrypoint (app/server)\ncd \"\${SERVER_DIR}\"\necho \"[api] starting dev server on :3100...\"\nexport ENVIRONMENT=\"${START_ENVIRONMENT}\"\nexec npm run api:dev\n"
 
 # Window 3 (optional): watch mainUI + Expense Tracker rebuilds
 WATCH_LAUNCHER="${LAUNCH_DIR}/03-watch.command"
 if [[ "$WITH_WATCH" -eq 1 ]]; then
-  write_launcher "$WATCH_LAUNCHER" "ROOT_DIR=\"${ROOT_DIR}\"\nPID_DIR=\"${PID_DIR}\"\nSERVER_DIR=\"${SERVER_DIR}\"\nMAINUI_DIR=\"${MAINUI_DIR}\"\nEXPENSE_TRACKER_DIR=\"${EXPENSE_TRACKER_DIR}\"\nmkdir -p \"\${PID_DIR}\"\necho \"\$(tty)\" > \"\${PID_DIR}/watch.tty\"\necho \"\$\$\" > \"\${PID_DIR}/watch.pid\"\n\n# Ensure deps\ncd \"\${MAINUI_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[mainUI] running npm install...\"; npm install; fi\n\ncd \"\${EXPENSE_TRACKER_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[expense-tracker] running npm install...\"; npm install; fi\n\ncd \"\${SERVER_DIR}\"\necho \"[watch] starting mainUI + expense-tracker watchers...\"\ntrap 'kill 0' INT TERM\nnpm run mainui:watch &\nnpm run expense-tracker:watch &\nwait\n"
+  write_launcher "$WATCH_LAUNCHER" "ROOT_DIR=\"${ROOT_DIR}\"\nPID_DIR=\"${PID_DIR}\"\nSERVER_DIR=\"${SERVER_DIR}\"\nMAINUI_DIR=\"${MAINUI_DIR}\"\nEXPENSE_TRACKER_DIR=\"${EXPENSE_TRACKER_DIR}\"\nmkdir -p \"\${PID_DIR}\"\necho \"\$(tty)\" > \"\${PID_DIR}/watch.tty\"\necho \"\$\$\" > \"\${PID_DIR}/watch.pid\"\n\n# Ensure deps\ncd \"\${MAINUI_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[mainUI] running npm install...\"; npm install; fi\n\ncd \"\${EXPENSE_TRACKER_DIR}\"\nif [[ ${NO_INSTALL} -eq 0 ]] && [[ ! -d \"node_modules\" ]]; then echo \"[expense-tracker] running npm install...\"; npm install; fi\n\ncd \"\${SERVER_DIR}\"\necho \"[watch] starting mainUI + expense-tracker watchers...\"\ntrap 'kill 0' INT TERM\nexport ENVIRONMENT=\"${START_ENVIRONMENT}\"\nnpm run mainui:watch &\nnpm run expense-tracker:watch &\nwait\n"
 fi
 
 open -a Terminal "$APP_LAUNCHER"

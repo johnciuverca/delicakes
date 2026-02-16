@@ -8,6 +8,7 @@ import transactionRoutes from "./transactions.js";
 const app = express();
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3100;
+const ENVIRONMENT = process.env.ENVIRONMENT || "DEV";
 
 app.use(cors());
 app.use(express.json());
@@ -20,5 +21,5 @@ app.use("/api/transactions", transactionRoutes);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT} in ${ENVIRONMENT} mode`);
 });
