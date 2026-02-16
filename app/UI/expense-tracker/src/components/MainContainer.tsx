@@ -57,6 +57,10 @@ const MainContainer = () => {
             });
       }, [refreshList]);
 
+      useEffect(() => {
+            refreshList();
+      }, [refreshList]);
+
       return (
             <AppContext value={{
                   transactions,

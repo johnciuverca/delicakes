@@ -15,6 +15,7 @@ const TransactionContainer = (props: TransactionContainerProps) => {
             }, []);
 
       const handleFilterChange = useCallback(() => (event: React.ChangeEvent<HTMLInputElement>) => {
+            console.log("Changed filter...", event.target.value);
             setFilterCriteria(event.target.value);
       }, []);
 

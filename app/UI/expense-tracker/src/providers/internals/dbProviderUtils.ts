@@ -1,6 +1,6 @@
 import type { Transaction, TransactionUI } from "../../model/types";
 
-const remoteApiBaseUrl = "http://192.168.0.118:3001";
+const remoteApiBaseUrl = "http://192.168.0.118:3100";
 const localApiBaseUrl = "http://localhost:3100";
 const apiBaseUrl = localApiBaseUrl;
 

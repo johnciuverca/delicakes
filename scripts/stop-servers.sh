@@ -59,6 +59,56 @@ is_pid_alive() {
   kill -0 "$pid" 2>/dev/null
 }
 
+kill_node_listeners_on_port() {
+  local port="$1"
+
+  command -v lsof >/dev/null 2>&1 || return 0
+
+  local pids
+  pids="$(lsof -tiTCP:"${port}" -sTCP:LISTEN 2>/dev/null || true)"
+  [[ -z "${pids:-}" ]] && return 0
+
+  for pid in $pids; do
+    [[ -z "${pid:-}" ]] && continue
+
+    local comm
+    comm="$(ps -p "$pid" -o comm= 2>/dev/null | awk '{print $1}' || true)"
+
+    # Avoid killing unrelated processes that might use these common ports.
+    if [[ "$comm" != *node* ]] && [[ "$comm" != *nodemon* ]]; then
+      echo "Port ${port} is in use by pid=${pid} (comm=${comm}); not killing (not node/nodemon)."
+      continue
+    fi
+
+    echo "Port ${port} listener pid=${pid} (comm=${comm}) - sending SIGTERM..."
+    kill "$pid" 2>/dev/null || true
+  done
+}
+
+force_kill_node_listeners_on_port() {
+  local port="$1"
+
+  command -v lsof >/dev/null 2>&1 || return 0
+
+  local pids
+  pids="$(lsof -tiTCP:"${port}" -sTCP:LISTEN 2>/dev/null || true)"
+  [[ -z "${pids:-}" ]] && return 0
+
+  for pid in $pids; do
+    [[ -z "${pid:-}" ]] && continue
+
+    local comm
+    comm="$(ps -p "$pid" -o comm= 2>/dev/null | awk '{print $1}' || true)"
+
+    if [[ "$comm" != *node* ]] && [[ "$comm" != *nodemon* ]]; then
+      continue
+    fi
+
+    echo "Port ${port} listener pid=${pid} (comm=${comm}) still running - sending SIGKILL..."
+    kill -9 "$pid" 2>/dev/null || true
+  done
+}
+
 read_pid() {
   local pid_file="$1"
   if [[ -f "$pid_file" ]]; then
@@ -133,21 +183,28 @@ close_terminal_window_by_id_file() {
 
 echo "Stopping servers..."
 
-# Stop in reverse order (watch -> data-api -> app-server)
-stop_pid_if_running "watch" "$WATCH_PID_FILE"
-stop_pid_if_running "data-api" "$DATA_PID_FILE"
-stop_pid_if_running "app-server" "$APP_PID_FILE"
+# Stop in reverse order (expense-tracker watch -> api -> app/server)
+stop_pid_if_running "expense-tracker watch" "$WATCH_PID_FILE"
+stop_pid_if_running "api" "$DATA_PID_FILE"
+stop_pid_if_running "app/server" "$APP_PID_FILE"
+
+# Also stop any stray listeners on the dev ports (helps after crashes).
+kill_node_listeners_on_port 3000
+kill_node_listeners_on_port 3100
 
 sleep 1
 
-force_kill_pid_if_running "watch" "$WATCH_PID_FILE"
-force_kill_pid_if_running "data-api" "$DATA_PID_FILE"
-force_kill_pid_if_running "app-server" "$APP_PID_FILE"
+force_kill_pid_if_running "expense-tracker watch" "$WATCH_PID_FILE"
+force_kill_pid_if_running "api" "$DATA_PID_FILE"
+force_kill_pid_if_running "app/server" "$APP_PID_FILE"
+
+force_kill_node_listeners_on_port 3000
+force_kill_node_listeners_on_port 3100
 
 # Close Terminal tabs/windows (requested)
-close_terminal_tabs_by_tty_file "watch" "$WATCH_TTY_FILE"
-close_terminal_tabs_by_tty_file "data-api" "$DATA_TTY_FILE"
-close_terminal_tabs_by_tty_file "app/build/app-server" "$APP_TTY_FILE"
+close_terminal_tabs_by_tty_file "expense-tracker watch" "$WATCH_TTY_FILE"
+close_terminal_tabs_by_tty_file "api" "$DATA_TTY_FILE"
+close_terminal_tabs_by_tty_file "app/server" "$APP_TTY_FILE"
 
 # Clean up any old window id files from previous implementation.
 rm -f "$WATCH_WIN_FILE" "$DATA_WIN_FILE" "$APP_WIN_FILE"
