@@ -8,14 +8,12 @@ interface TransactionContainerProps {
 const TransactionContainer = (props: TransactionContainerProps) => {
       const [sortCriteria, setSortCriteria] = useState("creationDate");
       const [filterCriteria, setFilterCriteria] = useState("");
+      
+      const handleSortChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
+            setSortCriteria(event.target.value);
+      }, []);
 
-      const handleSortChange = useCallback(() =>
-            (event: React.ChangeEvent<HTMLSelectElement>) => {
-                  setSortCriteria(event.target.value);
-            }, []);
-
-      const handleFilterChange = useCallback(() => (event: React.ChangeEvent<HTMLInputElement>) => {
-            console.log("Changed filter...", event.target.value);
+      const handleFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
             setFilterCriteria(event.target.value);
       }, []);
 
@@ -40,7 +38,7 @@ const TransactionContainer = (props: TransactionContainerProps) => {
                                     value={sortCriteria}
                                     onChange={handleSortChange}
                               >
-                                    <option value="creationDate" selected>Default</option>
+                                    <option value="creationDate">Default</option>
                                     <option value="recordDate">Newest</option>
                                     <option value="reverseRecordDate">Oldest</option>
                                     <option value="alphabetic">{"A -> Z"}</option>
