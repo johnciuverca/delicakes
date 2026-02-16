@@ -1,4 +1,4 @@
-import { onReady, setActiveNavLink } from "../common";
+import { onReady, setActiveNavLink } from "../common.js";
 
 type LoginResponse = {
       authCookie: string;
@@ -59,3 +59,4 @@ onReady(() => {
                   });
       });
 });
+

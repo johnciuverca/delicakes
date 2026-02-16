@@ -1,4 +1,4 @@
-import { onReady, setActiveNavLink } from "./common";
+import { onReady, setActiveNavLink } from "./common.js";
 
 type SlideState = {
       currentPhotoIndex: number;
@@ -114,3 +114,4 @@ onReady(() => {
             resetAutoSlide(container, state);
       };
 });
+

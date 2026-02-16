@@ -9,7 +9,7 @@
             "moduleResolution": "Bundler",
             "strict": true,
             "rootDir": "./src/ts",
-            "outDir": "./src/scripts",
+            "outDir": "./dist/scripts",
             "sourceMap": true,
             "noEmitOnError": true,
             "skipLibCheck": true

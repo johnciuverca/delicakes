@@ -11,15 +11,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve static files from the main folder
-app.use(express.static(path.join(__dirname, "../../UI/mainUI/src")));
+// Serve built JS for mainUI
+app.use("/scripts", express.static(path.join(__dirname, "../../UI/mainUI/dist/scripts")));
 
-// Serve images from assets folder
-app.use("/assets", express.static(path.join(__dirname, "../../UI/mainUI/assets")));
+// Serve mainUI as a built site (dist only)
+app.use(express.static(path.join(__dirname, "../../UI/mainUI/dist")));
 
 // Serve the main page
 app.get("/", (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, "../../UI/mainUI/src/index.html"));
+      res.sendFile(path.join(__dirname, "../../UI/mainUI/dist/index.html"));
 });
 
 const getExpenseTracker = express.static(path.join(__dirname, "../../UI/expense-tracker/dist"));
@@ -63,7 +63,7 @@ app.use("/expense-tracker", (req: Request, res: Response, next: NextFunction) =>
 
 // Serve login page
 app.get("/login", (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, "../../UI/mainUI/src/pages/login.html"));
+      res.sendFile(path.join(__dirname, "../../UI/mainUI/dist/pages/login.html"));
 });
 
 // Start server
