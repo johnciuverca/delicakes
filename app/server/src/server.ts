@@ -11,15 +11,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve built JS for mainUI
-app.use("/scripts", express.static(path.join(__dirname, "../../UI/mainUI/dist/scripts")));
-
 // Serve mainUI as a built site (dist only)
-app.use(express.static(path.join(__dirname, "../../UI/mainUI/dist")));
+const mainUiDistDir = path.join(__dirname, "../../UI/mainUI/dist");
+app.use(express.static(mainUiDistDir));
 
-// Serve the main page
-app.get("/", (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, "../../UI/mainUI/dist/index.html"));
+// React SPA entry (preserve old .html URLs)
+app.get(["/", "/login", "/pages/:page"], (_req: Request, res: Response) => {
+      res.sendFile(path.join(mainUiDistDir, "index.html"));
 });
 
 const getExpenseTracker = express.static(path.join(__dirname, "../../UI/expense-tracker/dist"));
@@ -59,11 +57,6 @@ app.use("/expense-tracker", (req: Request, res: Response, next: NextFunction) =>
             return;
       }
       res.redirect("/login");
-});
-
-// Serve login page
-app.get("/login", (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, "../../UI/mainUI/dist/pages/login.html"));
 });
 
 // Start server
