@@ -10,7 +10,7 @@ const NavBar: React.FC<NavBarProps> = () => {
                   </div>
                   <h1>Delicakes Expense Tracker</h1>
                   <div className="right-links">
-                        <a href="#" id="logout-btn">Logout</a>
+                        <a href="/login" id="logout-btn">Logout</a>
                   </div>
             </nav>
       );

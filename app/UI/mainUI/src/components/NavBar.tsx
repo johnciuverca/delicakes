@@ -1,12 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { NavAnchor } from './NavAnchor';
-
-interface NavLinkItem {
-  label: string;
-  href: string;
-  external?: boolean;
-}
-
+import { NavLinkItem } from './shared';
 
 const leftLinks: NavLinkItem[] = [
   { label: "Recipes", href: "/pages/recipes.html" },
