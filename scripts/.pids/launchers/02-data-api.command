@@ -15,5 +15,5 @@ if [[ 0 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[api] running npm inst
 # Start api via the main entrypoint (app/server)
 cd "${SERVER_DIR}"
 echo "[api] starting dev server on :3100..."
-export ENVIRONMENT="PROD"
+export ENVIRONMENT="DEV"
 exec npm run api:dev

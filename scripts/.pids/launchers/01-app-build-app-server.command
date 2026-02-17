@@ -28,5 +28,5 @@ npm run expense-tracker:build
 
 # Start the main app server on :3000
 echo "[app/server] starting dev server on :3000..."
-export ENVIRONMENT="PROD"
+export ENVIRONMENT="DEV"
 exec npm run app:dev
