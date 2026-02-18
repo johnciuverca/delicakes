@@ -11,7 +11,7 @@ import { LoginPage } from "./pages/LoginPage";
 export function App(): React.JSX.Element {
   return (
     <Layout>
-      <Routes>
+      {/* <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/pages/login.html" element={<LoginPage />} />
@@ -19,7 +19,7 @@ export function App(): React.JSX.Element {
         <Route path="/pages/contact.html" element={<ContactPage />} />
         <Route path="/pages/recipes.html" element={<RecipesPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      </Routes> */}
     </Layout>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 type LoginResponse = {
   authCookie: string;
@@ -17,19 +17,16 @@ function useLoginStylesheet(): void {
 }
 
 export function LoginPage(): React.JSX.Element {
-  useLoginStylesheet();
-
+  // useLoginStylesheet();
+  
   const [role, setRole] = useState("admin");
   const [password, setPassword] = useState("");
-
+  
   const canSubmit = useMemo(() => role.length > 0, [role]);
-
-  return (
-    <form
-      className="login-form"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (!canSubmit) return;
+  
+  const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (!canSubmit) return;
 
         fetch("/expense-tracker", {
           method: "POST",
@@ -44,7 +41,7 @@ export function LoginPage(): React.JSX.Element {
           .then(async (res) => {
             if (!res.redirected && res.status === 200) {
               const data = (await res.json()) as LoginResponse;
-              document.cookie = `auth=${data.authCookie}; path=/`;
+            //  document.cookie = `auth=${data.authCookie}; path=/`;
               window.location.href = "/expense-tracker";
               return;
             }
@@ -59,7 +56,13 @@ export function LoginPage(): React.JSX.Element {
           .catch(() => {
             alert("Login failed. Please try again.");
           });
-      }}
+  }, [role, password, canSubmit]);
+
+
+  return (
+    <form
+      className="login-form"
+      onSubmit={handleSubmit}
     >
       <div className="form-container">
         <label htmlFor="role">
@@ -85,6 +88,9 @@ export function LoginPage(): React.JSX.Element {
         <button type="submit" disabled={!canSubmit}>
           Login
         </button>
+        <div>Not registered? 
+            <link href="">Create an account</link>
+        </div>
       </div>
     </form>
   );

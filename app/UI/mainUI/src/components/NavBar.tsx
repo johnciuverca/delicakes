@@ -1,6 +1,11 @@
 import { useLocation } from 'react-router-dom';
 import { NavAnchor } from './NavAnchor';
 import { NavLinkItem } from './shared';
+import { LoginPage } from '../pages/LoginPage';
+
+type NavBarProps = {
+  setContent?: (content: React.JSX.Element) => void;
+};
 
 const leftLinks: NavLinkItem[] = [
   { label: "Recipes", href: "/pages/recipes.html" },
@@ -9,10 +14,10 @@ const leftLinks: NavLinkItem[] = [
 
 const rightLinks: NavLinkItem[] = [
   { label: "Contact", href: "/pages/contact.html" },
-  { label: "Expense-Tracker", href: "/expense-tracker", external: true },
+  { label: "Login", href: "/login"},
 ];
 
-export function NavBar(): React.JSX.Element {
+export function NavBar(props: NavBarProps): React.JSX.Element {
       const { pathname: currentPath } = useLocation();
       return (
 		  <nav className="navbar">
@@ -22,9 +27,11 @@ export function NavBar(): React.JSX.Element {
           ))}
         </div>
         <div className="right-links">
-          {rightLinks.map((item) => (
+          <button>Contact</button>
+          <button onClick={() => props.setContent ? props.setContent(<LoginPage/>) : null} >Login</button>
+          {/* {rightLinks.map((item) => (
             <NavAnchor key={item.href} item={item} currentPath={currentPath} />
-          ))}
+          ))} */}
         </div>
       </nav>
       );
