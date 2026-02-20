@@ -17,7 +17,7 @@ function useLoginStylesheet(): void {
 }
 
 export function LoginPage(): React.JSX.Element {
-  // useLoginStylesheet();
+  useLoginStylesheet();
   
   const [role, setRole] = useState("admin");
   const [password, setPassword] = useState("");
@@ -89,7 +89,7 @@ export function LoginPage(): React.JSX.Element {
           Login
         </button>
         <div>Not registered? 
-            <link href="">Create an account</link>
+            {/* <link href="/">Create an account</link> */}
         </div>
       </div>
     </form>
