@@ -16,7 +16,7 @@ const mainUiDistDir = path.join(__dirname, "../../UI/mainUI/dist");
 app.use(express.static(mainUiDistDir));
 
 // React SPA entry (preserve old .html URLs)
-app.get(["/", "/login", "/pages/:page"], (_req: Request, res: Response) => {
+app.get(["/", "/login", "/pages/:page", "/register"], (_req: Request, res: Response) => {
       res.sendFile(path.join(mainUiDistDir, "index.html"));
 });
 
