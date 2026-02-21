@@ -41,7 +41,7 @@ export function LoginPage(): React.JSX.Element {
             }
 
             alert("Login failed. Please try again.");
-            })
+        })
         .catch(() => {
             alert("Login failed. Please try again.");
         });

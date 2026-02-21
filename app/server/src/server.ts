@@ -15,52 +15,52 @@ app.use(cookieParser());
 const mainUiDistDir = path.join(__dirname, "../../UI/mainUI/dist");
 app.use(express.static(mainUiDistDir));
 
-// React SPA entry (preserve old .html URLs)
-app.get(["/", "/login", "/pages/:page", "/register"], (_req: Request, res: Response) => {
-      res.sendFile(path.join(mainUiDistDir, "index.html"));
+// SPA fallback for React Router (exclude API + expense-tracker + real files)
+app.get(/^\/(?!api|expense-tracker)(?!.*\.[a-zA-Z0-9]+$).*/, (_req: Request, res: Response) => {
+    res.sendFile(path.join(mainUiDistDir, "index.html"));
 });
 
 const getExpenseTracker = express.static(path.join(__dirname, "../../UI/expense-tracker/dist"));
 const authCookie = "123-fake-auth-cookie";
 
 type ExpenseTrackerLoginBody = {
-      role?: string;
-      psw?: string;
+    role?: string;
+    psw?: string;
 };
 
 app.post(
-      "/expense-tracker",
-      (req: Request<Record<string, never>, unknown, ExpenseTrackerLoginBody>, res: Response) => {
-            const reqAuthCookie = req.cookies ? (req.cookies["auth"] as string | undefined) : undefined;
-            if (reqAuthCookie === authCookie) {
-                  res.status(200).json({ authCookie });
-                  return;
-            }
+    "/expense-tracker",
+    (req: Request<Record<string, never>, unknown, ExpenseTrackerLoginBody>, res: Response) => {
+        const reqAuthCookie = req.cookies ? (req.cookies["auth"] as string | undefined) : undefined;
+        if (reqAuthCookie === authCookie) {
+            res.status(200).json({ authCookie });
+            return;
+        }
 
-            const role = req.body.role;
-            const inputPassword = req.body.psw;
+        const role = req.body.role;
+        const inputPassword = req.body.psw;
 
-            if (authenticateUser(role, inputPassword)) {
-                  res.status(200).json({ authCookie });
-                  return;
-            }
+        if (authenticateUser(role, inputPassword)) {
+            res.status(200).json({ authCookie });
+            return;
+        }
 
-            res.status(401).json({ message: "Unauthorized" });
-      },
+        res.status(401).json({ message: "Unauthorized" });
+    },
 );
 
 // Serve static files from the expense-tracker folder (CSS, JS, etc.)
 app.use("/expense-tracker", (req: Request, res: Response, next: NextFunction) => {
-      const reqAuthCookie = req.cookies ? (req.cookies["auth"] as string | undefined) : undefined;
-      if (reqAuthCookie === authCookie) {
-            getExpenseTracker(req, res, next);
-            return;
-      }
-      res.redirect("/login");
+    const reqAuthCookie = req.cookies ? (req.cookies["auth"] as string | undefined) : undefined;
+    if (reqAuthCookie === authCookie) {
+        getExpenseTracker(req, res, next);
+        return;
+    }
+    res.redirect("/login");
 });
 
 // Start server
 app.listen(PORT, () => {
-      // eslint-disable-next-line no-console
-      console.log(`Server is running on http://localhost:${PORT}`);
+    // eslint-disable-next-line no-console
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
