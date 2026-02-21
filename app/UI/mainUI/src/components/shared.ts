@@ -1,5 +1,6 @@
+
 export type NavLinkItem = {
   label: string;
   href: string;
-  external?: boolean;
+  position: "left" | "right";
 };
