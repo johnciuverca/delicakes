@@ -24,7 +24,7 @@ const getExpenseTracker = express.static(path.join(__dirname, "../../UI/expense-
 const authCookie = "123-fake-auth-cookie";
 
 type ExpenseTrackerLoginBody = {
-    role?: string;
+    email?: string;
     psw?: string;
 };
 
@@ -37,10 +37,10 @@ app.post(
             return;
         }
 
-        const role = req.body.role;
+        const email = req.body.email;
         const inputPassword = req.body.psw;
 
-        if (authenticateUser(role, inputPassword)) {
+        if (authenticateUser(email, inputPassword)) {
             res.status(200).json({ authCookie });
             return;
         }

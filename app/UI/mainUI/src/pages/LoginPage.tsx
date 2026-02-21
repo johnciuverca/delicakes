@@ -9,10 +9,10 @@ type LoginResponse = {
 export function LoginPage(): React.JSX.Element {
     useLoginStylesheet();
 
-    const [role, setRole] = useState("admin");
     const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
 
-    const canSubmit = useMemo(() => role.length > 0, [role]);
+    const canSubmit = useMemo(() => email.length > 0, [email]);
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -24,7 +24,7 @@ export function LoginPage(): React.JSX.Element {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                role,
+                email: email,
                 psw: password,
             }),
         }).then(async (res) => {
@@ -45,7 +45,7 @@ export function LoginPage(): React.JSX.Element {
         .catch(() => {
             alert("Login failed. Please try again.");
         });
-    }, [role, password, canSubmit]);
+    }, [email, password, canSubmit]);
 
 
     return (
@@ -55,13 +55,17 @@ export function LoginPage(): React.JSX.Element {
                 onSubmit={handleSubmit}
             >
                 <div className="form-container">
-                    <label htmlFor="role">
-                        <b>Role</b>
+                    <label htmlFor="email">
+                        <b>Email</b>
                     </label>
-                    <select name="role" id="role" value={role} onChange={(e) => setRole(e.target.value)}>
-                        <option value="admin">Admin</option>
-                        <option value="audit">Audit</option>
-                    </select>
+                    <input
+                        id="email"
+                        type="text"
+                        placeholder="Enter Email"
+                        name="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
 
                     <label htmlFor="psw">
                         <b>Password</b>
