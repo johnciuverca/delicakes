@@ -8,6 +8,7 @@ import { RecipesPage } from "./pages/RecipesPage";
 import { LoginPage } from "./pages/LoginPage";
 import { Header } from "./components/Header";
 import { NavBar } from "./components/NavBar";
+import RegisterPage from "./pages/RegisterPage";
 
 export function App(): React.JSX.Element {
   return (  
@@ -21,6 +22,7 @@ export function App(): React.JSX.Element {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage/>}/>
             </Routes>
         </BrowserRouter>
     </div>
