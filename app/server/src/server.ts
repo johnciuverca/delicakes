@@ -16,7 +16,7 @@ const mainUiDistDir = path.join(__dirname, "../../UI/mainUI/dist");
 app.use(express.static(mainUiDistDir));
 
 // SPA fallback for React Router (exclude API + expense-tracker + real files)
-app.get(/^\/(?!api|expense-tracker)(?!.*\.[a-zA-Z0-9]+$).*/, (_req: Request, res: Response) => {
+app.get(/^\/(?!api|expense-tracker|logout)(?!.*\.[a-zA-Z0-9]+$).*/, (_req: Request, res: Response) => {
     res.sendFile(path.join(mainUiDistDir, "index.html"));
 });
 
@@ -48,6 +48,10 @@ app.post(
         res.status(401).json({ message: "Unauthorized" });
     },
 );
+
+app.post("/logout", (req: Request, res: Response) => {
+    res.status(200).json({ message: "Logged out" });
+});
 
 // Serve static files from the expense-tracker folder (CSS, JS, etc.)
 app.use("/expense-tracker", (req: Request, res: Response, next: NextFunction) => {

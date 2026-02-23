@@ -37,9 +37,9 @@ export function LoginPage(): React.JSX.Element {
                     alert("Login failed. Please try again.");
                     return;
                 }
-            //  document.cookie = `auth=${data.authCookie}; path=/`;
+                //  document.cookie = `auth=${data.authCookie}; path=/`;
+                setAuthenticatedState(true);
                 navigate("/", { replace: true });
-                setAuthenticatedState?.(true);
                 return;
             }
 
