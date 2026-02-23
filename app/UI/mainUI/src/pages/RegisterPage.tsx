@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLoginStylesheet } from "../hooks/LoginStylesheet";
 
-export default function RegisterPage() {
+export function RegisterPage() {
     useLoginStylesheet();
 
 	const [name, setName] = useState("");

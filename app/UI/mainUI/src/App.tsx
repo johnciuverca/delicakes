@@ -8,7 +8,8 @@ import { RecipesPage } from "./pages/RecipesPage";
 import { LoginPage } from "./pages/LoginPage";
 import { Header } from "./components/Header";
 import { NavBar } from "./components/NavBar";
-import RegisterPage from "./pages/RegisterPage";
+import { RegisterPage } from "./pages/RegisterPage";
+import { ProfilePage } from "./pages/ProfiePage";
 
 export let setAuthenticatedState: React.Dispatch<React.SetStateAction<boolean>> | null = null;
 
@@ -29,6 +30,7 @@ export function App(): React.JSX.Element {
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage/>}/>
+                <Route path="/profile" element={<ProfilePage/>}/>
             </Routes>
         </BrowserRouter>
     </div>
