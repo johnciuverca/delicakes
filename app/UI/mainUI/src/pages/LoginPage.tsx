@@ -10,10 +10,9 @@ type LoginResponse = {
 export function LoginPage(): React.JSX.Element {
     useLoginStylesheet();
 
-
     const navigate = useNavigate();
-    const [password, setPassword] = useState("");
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState("admin");
+    const [password, setPassword] = useState("0000");
 
     const canSubmit = useMemo(() => email.length > 0, [email]);
 
@@ -21,7 +20,7 @@ export function LoginPage(): React.JSX.Element {
         event.preventDefault();
         if (!canSubmit) return;
 
-        fetch("/expense-tracker", {
+        fetch("/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

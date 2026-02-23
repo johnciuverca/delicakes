@@ -15,22 +15,22 @@ app.use(cookieParser());
 const mainUiDistDir = path.join(__dirname, "../../UI/mainUI/dist");
 app.use(express.static(mainUiDistDir));
 
-// SPA fallback for React Router (exclude API + expense-tracker + real files)
-app.get(/^\/(?!api|expense-tracker|logout)(?!.*\.[a-zA-Z0-9]+$).*/, (_req: Request, res: Response) => {
+// SPA fallback for React Router (exclude API + login + logout + real files)
+app.get(/^\/(?!api|login|logout)(?!.*\.[a-zA-Z0-9]+$).*/, (_req: Request, res: Response) => {
     res.sendFile(path.join(mainUiDistDir, "index.html"));
 });
 
 const getExpenseTracker = express.static(path.join(__dirname, "../../UI/expense-tracker/dist"));
 const authCookie = "123-fake-auth-cookie";
 
-type ExpenseTrackerLoginBody = {
+type LoginBody = {
     email?: string;
     psw?: string;
 };
 
 app.post(
-    "/expense-tracker",
-    (req: Request<Record<string, never>, unknown, ExpenseTrackerLoginBody>, res: Response) => {
+    "/login",
+    (req: Request<Record<string, never>, unknown, LoginBody>, res: Response) => {
         const reqAuthCookie = req.cookies ? (req.cookies["auth"] as string | undefined) : undefined;
         if (reqAuthCookie === authCookie) {
             res.status(200).json({ authCookie });
@@ -54,7 +54,8 @@ app.post("/logout", (req: Request, res: Response) => {
 });
 
 // Serve static files from the expense-tracker folder (CSS, JS, etc.)
-app.use("/expense-tracker", (req: Request, res: Response, next: NextFunction) => {
+app.use(
+    "/expense-tracker", (req: Request, res: Response, next: NextFunction) => {
     const reqAuthCookie = req.cookies ? (req.cookies["auth"] as string | undefined) : undefined;
     if (reqAuthCookie === authCookie) {
         getExpenseTracker(req, res, next);
