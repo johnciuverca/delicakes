@@ -10,7 +10,7 @@ echo "$$" > "${PID_DIR}/data-api.pid"
 
 # Ensure api deps
 cd "${API_DIR}"
-if [[ 1 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[api] running npm install..."; npm install; fi
+if [[ 0 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[api] running npm install..."; npm install; fi
 
 # Start api via the main entrypoint (app/server)
 cd "${SERVER_DIR}"

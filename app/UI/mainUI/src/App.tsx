@@ -10,6 +10,12 @@ import { Header } from "./components/Header";
 import { NavBar } from "./components/NavBar";
 import RegisterPage from "./pages/RegisterPage";
 
+export let setAuthenticatedState: React.Dispatch<React.SetStateAction<boolean>> | null = null;
+
+export function setAuthenticatedSetter(setter: React.Dispatch<React.SetStateAction<boolean>>): void {
+    setAuthenticatedState = setter;
+}
+
 export function App(): React.JSX.Element {
   return (  
     <div className="container">

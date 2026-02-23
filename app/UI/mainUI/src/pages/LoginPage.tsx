@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLoginStylesheet } from "../hooks/LoginStylesheet";
+import { setAuthenticatedState } from "../App";
 
 type LoginResponse = {
     authCookie: string;
@@ -9,6 +10,8 @@ type LoginResponse = {
 export function LoginPage(): React.JSX.Element {
     useLoginStylesheet();
 
+
+    const navigate = useNavigate();
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
 
@@ -30,8 +33,13 @@ export function LoginPage(): React.JSX.Element {
         }).then(async (res) => {
             if (!res.redirected && res.status === 200) {
                 const data = (await res.json()) as LoginResponse;
+                if(setAuthenticatedState === null) {
+                    alert("Login failed. Please try again.");
+                    return;
+                }
             //  document.cookie = `auth=${data.authCookie}; path=/`;
-                window.location.href = "/expense-tracker";
+                navigate("/", { replace: true });
+                setAuthenticatedState?.(true);
                 return;
             }
 

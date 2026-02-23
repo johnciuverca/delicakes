@@ -3,8 +3,8 @@ const knownCredentials = new Map<string, string>([
       ["audit", "0000"],
 ]);
 
-export function authenticateUser(role: string | undefined, inputPassword: string | undefined): boolean {
-      if (!role) return false;
-      const realPassword = knownCredentials.get(role);
+export function authenticateUser(email: string | undefined, inputPassword: string | undefined): boolean {
+      if (!email) return false;
+      const realPassword = knownCredentials.get(email);
       return Boolean(inputPassword && inputPassword === realPassword);
 }

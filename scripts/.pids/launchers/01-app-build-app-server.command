@@ -11,13 +11,13 @@ echo "$$" > "${PID_DIR}/app-server.pid"
 
 # Ensure deps (server + UIs)
 cd "${SERVER_DIR}"
-if [[ 1 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[app/server] running npm install..."; npm install; fi
+if [[ 0 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[app/server] running npm install..."; npm install; fi
 
 cd "${MAINUI_DIR}"
-if [[ 1 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[mainUI] running npm install..."; npm install; fi
+if [[ 0 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[mainUI] running npm install..."; npm install; fi
 
 cd "${EXPENSE_TRACKER_DIR}"
-if [[ 1 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[expense-tracker] running npm install..."; npm install; fi
+if [[ 0 -eq 0 ]] && [[ ! -d "node_modules" ]]; then echo "[expense-tracker] running npm install..."; npm install; fi
 
 # Build UIs (so app/server can serve them)
 cd "${SERVER_DIR}"

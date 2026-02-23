@@ -1,15 +1,17 @@
 import { useLocation } from 'react-router-dom';
 import { NavAnchor } from './NavAnchor';
 import { NavLinkItem } from './shared';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { setAuthenticatedSetter } from '../App';
+
 
 const leftLinks: NavLinkItem[] = [
-  { label: "Recipes", href: "/pages/recipes", position: "left" },
-  { label: "About", href: "/pages/about", position: "left" },
+    { label: "Recipes", href: "/pages/recipes", position: "left" },
+    { label: "About", href: "/pages/about", position: "left" },
 ];
 
 const rightLinks: NavLinkItem[] = [
-  { label: "Contact", href: "/pages/contact", position: "right" },
+    { label: "Contact", href: "/pages/contact", position: "right" },
 ];
 
 const loginLink: NavLinkItem = { label: "Login", href: "/login", position: "right" };
@@ -23,11 +25,16 @@ const links : Array<NavLinkItem> = [
 export function NavBar(): React.JSX.Element {
     const { pathname: currentPath } = useLocation();
     
-    const [profileLink, setProfileLink] = useState<NavLinkItem>(loginLink);
+    const [authenticated, setAuthenticated] = useState(false);
+    const profileLink = useMemo(() => authenticated ? logoutLink : loginLink, [authenticated]);
     const displayLinks = useMemo(() => [...links, profileLink], [links, profileLink]);
-
-    const displayLeftLinks = useMemo(() => displayLinks.filter(link => link.position === 'left'), [links]);
-    const displayRightLinks = useMemo(() => displayLinks.filter(link => link.position === 'right'), [links]);
+    
+    const displayLeftLinks = useMemo(() => displayLinks.filter(link => link.position === 'left'), [displayLinks]);
+    const displayRightLinks = useMemo(() => displayLinks.filter(link => link.position === 'right'), [displayLinks]);
+    
+    useEffect(() => {
+        setAuthenticatedSetter(setAuthenticated);
+    }, []);
     
     return (
         <nav className="navbar">
