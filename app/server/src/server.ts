@@ -2,6 +2,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import path from "path";
 import cookieParser from "cookie-parser";
 import { authenticateUser } from "./model/user";
+import { get } from "http";
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -13,14 +14,23 @@ app.use(cookieParser());
 
 // Serve mainUI as a built site (dist only)
 const mainUiDistDir = path.join(__dirname, "../../UI/mainUI/dist");
+const expenseTrackerDistDir = path.join(__dirname, "../../UI/expense-tracker/dist");
+
+app.use("/expense-tracker1", (req: Request, res: Response, next: NextFunction) => {
+    const handler = express.static(expenseTrackerDistDir);
+    handler(req, res, next);
+    return;
+});
+
 app.use(express.static(mainUiDistDir));
 
 // SPA fallback for React Router (exclude API + login + logout + real files)
 app.get(/^\/(?!api|login|logout)(?!.*\.[a-zA-Z0-9]+$).*/, (_req: Request, res: Response) => {
-    res.sendFile(path.join(mainUiDistDir, "index.html"));
+    res.sendFile(path.join(mainUiDistDir, "index.html"));   
+    return
 });
 
-const getExpenseTracker = express.static(path.join(__dirname, "../../UI/expense-tracker/dist"));
+const getExpenseTracker = express.static(path.join(__dirname, expenseTrackerDistDir));
 const authCookie = "123-fake-auth-cookie";
 
 type LoginBody = {

@@ -5,7 +5,7 @@ import {
   deleteTransaction,
   getAllTransactions,
   updateTransaction,
-} from "./data/fileSystemStorage.js";
+} from "../data/fileSystemStorage.js";
 
 const router = Router();
 

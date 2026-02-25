@@ -3,7 +3,7 @@ import "dotenv/config";
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 
-import transactionRoutes from "./transactions.js";
+import transactionRoutes from "./model/transactions.js";
 
 const app = express();
 
