@@ -1,6 +1,4 @@
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
+import { Pool } from "pg";
 
 export type Transaction = {
   id: number;
@@ -14,54 +12,48 @@ type DbState = {
   nextId: number;
 };
 
-const ENVIRONMENT = process.env.ENVIRONMENT || "DEV";
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-const serverRoot = process.cwd();
-
-function getProdStorageDir(): string {
-  if (process.platform === "darwin") {
-    return path.join(os.homedir(), "Library", "Application Support", "delicakes", ".storage");
-  }
-
-  if (process.platform === "win32") {
-    const appData = process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming");
-    return path.join(appData, "delicakes", ".storage");
-  }
-
-  const xdgDataHome = process.env.XDG_DATA_HOME || path.join(os.homedir(), ".local", "share");
-  return path.join(xdgDataHome, "delicakes", ".storage");
-}
-
-const storageDir = ENVIRONMENT === "PROD"
-  ? getProdStorageDir()
-  : path.join(serverRoot, ".storage");
-
-const storageFile = path.join(storageDir, "transactions.json");
+let ensureTablePromise: Promise<void> | null = null;
 
 async function ensureStorageReady(): Promise<void> {
-  await fs.mkdir(storageDir, { recursive: true });
-  try {
-    await fs.access(storageFile);
-  } catch {
-    const initial: DbState = { transactions: [], nextId: 1 };
-    await fs.writeFile(storageFile, JSON.stringify(initial, null, 2));
+  if (!ensureTablePromise) {
+    ensureTablePromise = pool.query(`
+      CREATE TABLE IF NOT EXISTS public.transactions (
+        id INTEGER PRIMARY KEY,
+        description TEXT NOT NULL,
+        amount NUMERIC(12,2) NOT NULL,
+        record_date DATE NOT NULL
+      )
+    `).then(() => undefined);
   }
-}
 
-async function readState(): Promise<DbState> {
-  await ensureStorageReady();
-  const raw = await fs.readFile(storageFile, "utf8");
-  return JSON.parse(raw) as DbState;
-}
-
-async function writeState(state: DbState): Promise<void> {
-  await ensureStorageReady();
-  await fs.writeFile(storageFile, JSON.stringify(state));
+  await ensureTablePromise;
 }
 
 export async function getAllTransactions(): Promise<Transaction[]> {
-  const state = await readState();
-  return state.transactions;
+  await ensureStorageReady();
+  const result = await pool.query<{
+    id: number;
+    description: string;
+    amount: string | number;
+    recordDate: string;
+  }>(`
+    SELECT
+      id,
+      description,
+      amount,
+      to_char(record_date, 'DD-MM-YYYY') AS "recordDate"
+    FROM public.transactions
+    ORDER BY id ASC
+  `);
+
+  return result.rows.map((row) => ({
+    id: row.id,
+    description: row.description,
+    amount: Number(row.amount),
+    recordDate: row.recordDate,
+  }));
 }
 
 export async function addTransaction(
@@ -69,18 +61,25 @@ export async function addTransaction(
   amount: number,
   recordDate: string,
 ): Promise<Transaction> {
-  const state = await readState();
+  await ensureStorageReady();
 
-  const newTransaction: Transaction = {
-    id: state.nextId++,
+  const result = await pool.query<{ id: number }>(`
+    WITH next_id AS (
+      SELECT COALESCE(MAX(id), 0) + 1 AS id
+      FROM public.transactions
+    )
+    INSERT INTO public.transactions (id, description, amount, record_date)
+    SELECT id, $1, $2, to_date($3, 'DD-MM-YYYY')
+    FROM next_id
+    RETURNING id
+  `, [description, amount, recordDate]);
+
+  return {
+    id: result.rows[0].id,
     description,
     amount,
     recordDate,
   };
-
-  state.transactions.push(newTransaction);
-  await writeState(state);
-  return newTransaction;
 }
 
 export async function updateTransaction(
@@ -89,27 +88,22 @@ export async function updateTransaction(
   amount: number,
   recordDate: string,
 ): Promise<void> {
-  const state = await readState();
+  await ensureStorageReady();
   const idNumber = typeof id === "string" ? Number(id) : id;
 
-  const target = state.transactions.find((t) => t.id === idNumber);
-  if (target) {
-    target.description = description;
-    target.amount = amount;
-    target.recordDate = recordDate;
-  }
-
-  await writeState(state);
+  await pool.query(
+    `UPDATE public.transactions
+     SET description = $2,
+         amount = $3,
+         record_date = to_date($4, 'DD-MM-YYYY')
+     WHERE id = $1`,
+    [idNumber, description, amount, recordDate],
+  );
 }
 
 export async function deleteTransaction(id: number | string): Promise<void> {
-  const state = await readState();
+  await ensureStorageReady();
   const idNumber = typeof id === "string" ? Number(id) : id;
 
-  const targetIndex = state.transactions.findIndex((t) => t.id === idNumber);
-  if (targetIndex !== -1) {
-    state.transactions.splice(targetIndex, 1);
-  }
-
-  await writeState(state);
+  await pool.query("DELETE FROM public.transactions WHERE id = $1", [idNumber]);
 }
