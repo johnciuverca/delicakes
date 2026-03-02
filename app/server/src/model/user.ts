@@ -1,10 +1,18 @@
-const knownCredentials = new Map<string, string>([
-      ["admin", "0000"],
-      ["audit", "0000"],
-]);
+import { getUserByEmail } from "../data/dbStorage";
+import { passwordsMatch } from "../security/utils";
 
-export function authenticateUser(email: string | undefined, inputPassword: string | undefined): boolean {
-      if (!email) return false;
-      const realPassword = knownCredentials.get(email);
-      return Boolean(inputPassword && inputPassword === realPassword);
+export async function authenticateUser(
+      email: string | undefined,
+      inputPassword: string | undefined,
+): Promise<boolean> {
+      if (!email || !inputPassword) {
+            return false;
+      }
+
+      const user = await getUserByEmail(email);
+      if (!user) {
+            return false;
+      }
+
+      return passwordsMatch(inputPassword, user.passwordHash);
 }

@@ -1,11 +1,24 @@
+import "dotenv/config";
+
 import express, { type NextFunction, type Request, type Response } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import { authenticateUser } from "./model/user";
-import { get } from "http";
+import { insertUser } from "./data/dbStorage";
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+
+type LoginBody = {
+    email?: string;
+    psw?: string;
+};
+
+type RegisterBody = {
+    email?: string;
+    password?: string;
+    name?: string;
+};
 
 // Middleware
 app.use(express.json());
@@ -16,6 +29,28 @@ app.use(cookieParser());
 const mainUiDistDir = path.join(__dirname, "../../UI/mainUI/dist");
 const expenseTrackerDistDir = path.join(__dirname, "../../UI/expense-tracker/dist");
 
+const registerHandler = (req: Request, res: express.Response) => {
+    const { email, password, name } = req.body ?? {};
+    if (!email || !password || !name) {
+        res.status(400).json({ message: "name, email, password and name are required" });
+        return;
+    }
+    insertUser({ email, password, name })
+    .then((user) => res.status(201).json(user))
+    .catch((err:any) => {
+        const error = err as { code?: string };
+
+        if (error.code === "23505") {
+            res.status(409).json({ message: "Email already exists" });
+            return;
+        }
+        res.status(500).json({
+            message: "Failed to create user",
+            error: err instanceof Error ? err.message : String(err)
+        });
+    });
+}
+
 app.use("/expense-tracker1", (req: Request, res: Response, next: NextFunction) => {
     const handler = express.static(expenseTrackerDistDir);
     handler(req, res, next);
@@ -23,6 +58,8 @@ app.use("/expense-tracker1", (req: Request, res: Response, next: NextFunction) =
 });
 
 app.use(express.static(mainUiDistDir));
+
+app.post("/register", registerHandler);
 
 // SPA fallback for React Router (exclude API + login + logout + real files)
 app.get(/^\/(?!api|login|logout)(?!.*\.[a-zA-Z0-9]+$).*/, (_req: Request, res: Response) => {
@@ -33,14 +70,9 @@ app.get(/^\/(?!api|login|logout)(?!.*\.[a-zA-Z0-9]+$).*/, (_req: Request, res: R
 const getExpenseTracker = express.static(path.join(__dirname, expenseTrackerDistDir));
 const authCookie = "123-fake-auth-cookie";
 
-type LoginBody = {
-    email?: string;
-    psw?: string;
-};
-
 app.post(
     "/login",
-    (req: Request<Record<string, never>, unknown, LoginBody>, res: Response) => {
+    async (req: Request<Record<string, never>, unknown, LoginBody>, res: Response) => {
         const reqAuthCookie = req.cookies ? (req.cookies["auth"] as string | undefined) : undefined;
         if (reqAuthCookie === authCookie) {
             res.status(200).json({ authCookie });
@@ -50,8 +82,15 @@ app.post(
         const email = req.body.email;
         const inputPassword = req.body.psw;
 
-        if (authenticateUser(email, inputPassword)) {
-            res.status(200).json({ authCookie });
+        try {
+            if (await authenticateUser(email, inputPassword)) {
+                res.status(200).json({ authCookie });
+                return;
+            }
+        } catch (caught) {
+            // eslint-disable-next-line no-console
+            console.error("Error authenticating user:", caught);
+            res.status(500).json({ message: "Authentication failed" });
             return;
         }
 
@@ -73,6 +112,7 @@ app.use(
     }
     res.redirect("/login");
 });
+
 
 // Start server
 app.listen(PORT, () => {

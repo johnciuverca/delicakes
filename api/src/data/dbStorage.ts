@@ -12,7 +12,27 @@ type DbState = {
   nextId: number;
 };
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+function getDatabaseUrl(): string {
+  const rawDatabaseUrl = process.env.DATABASE_URL;
+  if (!rawDatabaseUrl || typeof rawDatabaseUrl !== "string") {
+    throw new Error("DATABASE_URL is required and must be a string");
+  }
+
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(rawDatabaseUrl);
+  } catch {
+    throw new Error("DATABASE_URL is not a valid URL");
+  }
+
+  if (!parsedUrl.password) {
+    throw new Error("DATABASE_URL must include a database password for SCRAM authentication");
+  }
+
+  return rawDatabaseUrl;
+}
+
+const pool = new Pool({ connectionString: getDatabaseUrl() });
 
 let ensureTablePromise: Promise<void> | null = null;
 

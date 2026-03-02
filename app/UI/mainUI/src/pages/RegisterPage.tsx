@@ -11,7 +11,40 @@ export function RegisterPage() {
 
 	const onSubmit = async(e: React.FormEvent) => {
 		e.preventDefault();
-	}
+        if(!name || !email || !password || !confirmPassword) {
+            alert("Please fill in all fields.");
+            return;
+        }
+        if(password !== confirmPassword) {
+            alert("Passwords do not match.");
+            return;
+        }
+        fetch("/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+            }),
+        }).then((res) => {
+            if (res.status === 201) {
+                alert("Registration successful! Please log in.");
+                return;
+            }
+            if (res.status === 400) {
+                alert("Registration failed. Please check your input and try again.");
+                return;
+            }
+            alert("Registration failed. Please try again.");
+        }).catch(() => {
+            alert("Registration failed. Please try again.");
+        });
+    };
+
+
 
 	return (
         <div className="form-wrapper">
