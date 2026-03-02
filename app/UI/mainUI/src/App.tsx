@@ -10,22 +10,17 @@ import { Header } from "./components/Header";
 import { NavBar } from "./components/NavBar";
 import { RegisterPage } from "./pages/RegisterPage";
 import { ProfilePage } from "./pages/ProfiePage";
-
-export let setAuthenticatedState: React.Dispatch<React.SetStateAction<boolean>> | null = null;
-
-export function setAuthenticatedSetter(setter: React.Dispatch<React.SetStateAction<boolean>>): void {
-    setAuthenticatedState = setter;
-}
-
-export let accountName: string | null = null;
-
-export function setAccountName(name: string | null): void {
-    accountName = name;
-}
+import { AppContext } from "./state/AppContext";
 
 export function App(): React.JSX.Element {
-  return (  
+    const [accountName, setAccountName] = React.useState<string | null>(null);
+    
+    return (  
     <div className="container">
+        <AppContext value={{
+            accountName: accountName,
+            setAccountName: setAccountName
+        }}>
         <BrowserRouter>
             <Header/>
             <NavBar />
@@ -39,6 +34,7 @@ export function App(): React.JSX.Element {
                 <Route path="/profile" element={<ProfilePage/>}/>
             </Routes>
         </BrowserRouter>
+        </AppContext>
     </div>
-  );
+    );
 }

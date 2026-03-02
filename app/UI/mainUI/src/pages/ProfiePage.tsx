@@ -1,10 +1,10 @@
 import React from "react";
-import { setAuthenticatedState } from "../App";
 import { useNavigate } from "react-router-dom";
+import { useAccountName } from "../state/AppContext";
 
 export function ProfilePage(): React.JSX.Element {
-
     const navigate = useNavigate();
+    const [_accountName, setAccountName] = useAccountName();
     
     return (
         <>
@@ -17,12 +17,8 @@ export function ProfilePage(): React.JSX.Element {
                         },
                     }).then((res) => {
                         if (res.status === 200) {
-                            if(setAuthenticatedState === null) {
-                                alert("Logout failed. Please try again.");
-                                return;
-                            }
-                            setAuthenticatedState(false);
-                            navigate("/login");
+                            setAccountName(null);
+                            navigate("/login"); 
                             return;
                         }
                     });

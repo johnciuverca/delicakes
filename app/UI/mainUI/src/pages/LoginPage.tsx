@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLoginStylesheet } from "../hooks/LoginStylesheet";
-import { setAccountName, setAuthenticatedState } from "../App";
+import { useAccountName } from "../state/AppContext";
 
 type LoginResponse = {
     user: { name: string, email: string };
@@ -16,6 +16,8 @@ export function LoginPage(): React.JSX.Element {
     const [password, setPassword] = useState("0000");
 
     const canSubmit = useMemo(() => email.length > 0, [email]);
+
+    const [_accountName, setAccountName] = useAccountName();
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -33,15 +35,10 @@ export function LoginPage(): React.JSX.Element {
         }).then(async (res) => {
             if (!res.redirected && res.status === 200) {
                 const data = (await res.json()) as LoginResponse;
-                if(setAuthenticatedState === null) {
-                    alert("Login failed. Please try again.");
-                    return;
-                }
                 
                 console.log("Login successful:", data);
                 
                 //  document.cookie = `auth=${data.authCookie}; path=/`;
-                setAuthenticatedState(true);
                 setAccountName(data.user.name);
 
                 navigate("/", { replace: true });

@@ -2,7 +2,8 @@ import { useLocation } from 'react-router-dom';
 import NavAnchor from './NavAnchor';
 import { NavLinkItem } from './shared';
 import { useEffect, useMemo, useState } from 'react';
-import { accountName, setAuthenticatedSetter } from '../App';
+import { AppContext, useAccountName } from '../state/AppContext';
+import React from 'react';
 
 const leftLinks: NavLinkItem[] = [
     { label: "Recipes", href: "/pages/recipes", position: "left" },
@@ -22,22 +23,21 @@ const links : Array<NavLinkItem> = [
 ];
 
 export function NavBar(): React.JSX.Element {
+
+    const accountName = useAccountName();
     const { pathname: currentPath } = useLocation();
-    
     const [authenticated, setAuthenticated] = useState(false);
+    
     const customizedProfileLink = useMemo(() => {
         const name = accountName || "USER";
         return { ...profileLink, label: `Hi, ${name}!` };
     }, [profileLink, accountName]);
+    
     const authLink = useMemo(() => authenticated ? customizedProfileLink : loginLink, [authenticated]);
     const displayLinks = useMemo(() => [...links, authLink], [links, authLink]);
     
     const displayLeftLinks = useMemo(() => displayLinks.filter(link => link.position === 'left'), [displayLinks]);
     const displayRightLinks = useMemo(() => displayLinks.filter(link => link.position === 'right'), [displayLinks]);
-    
-    useEffect(() => {
-        setAuthenticatedSetter(setAuthenticated);
-    }, []);
     
     return (
         <nav className="navbar">
