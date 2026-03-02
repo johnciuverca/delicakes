@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLoginStylesheet } from "../hooks/LoginStylesheet";
-import { setAuthenticatedState } from "../App";
+import { setAccountName, setAuthenticatedState } from "../App";
 
 type LoginResponse = {
+    user: { name: string, email: string };
     authCookie: string;
 };
 
@@ -36,8 +37,13 @@ export function LoginPage(): React.JSX.Element {
                     alert("Login failed. Please try again.");
                     return;
                 }
+                
+                console.log("Login successful:", data);
+                
                 //  document.cookie = `auth=${data.authCookie}; path=/`;
                 setAuthenticatedState(true);
+                setAccountName(data.user.name);
+
                 navigate("/", { replace: true });
                 return;
             }

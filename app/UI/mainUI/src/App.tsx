@@ -17,6 +17,12 @@ export function setAuthenticatedSetter(setter: React.Dispatch<React.SetStateActi
     setAuthenticatedState = setter;
 }
 
+export let accountName: string | null = null;
+
+export function setAccountName(name: string | null): void {
+    accountName = name;
+}
+
 export function App(): React.JSX.Element {
   return (  
     <div className="container">

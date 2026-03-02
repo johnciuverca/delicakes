@@ -83,8 +83,13 @@ app.post(
         const inputPassword = req.body.psw;
 
         try {
-            if (await authenticateUser(email, inputPassword)) {
-                res.status(200).json({ authCookie });
+            const authenticationResult = await authenticateUser(email, inputPassword);
+            if (authenticationResult.success && authenticationResult.user) {
+                const sanitizedUser = {
+                    name: authenticationResult.user.name,
+                    email: authenticationResult.user.email,  
+                };
+                res.status(200).json({ user: sanitizedUser });
                 return;
             }
         } catch (caught) {
