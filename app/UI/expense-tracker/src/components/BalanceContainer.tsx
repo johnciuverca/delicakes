@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
-import type { Transaction } from "../model/types";
+import { useTransactions } from "../state/AppContext";
 
 type BalanceContainerProps = {
-      transactions: Array<Transaction>;
 };
 
-const BalanceContainer = ({ transactions }: BalanceContainerProps) => {
-      const income = useMemo(() => {
+const BalanceContainer = ({ }: BalanceContainerProps) => {
+    const transactions = useTransactions();
+    const income = useMemo(() => {
             return transactions
                   .filter(t => t.amount > 0)
                   .reduce((acc, t) => acc + Math.abs(t.amount), 0);
@@ -19,8 +19,6 @@ const BalanceContainer = ({ transactions }: BalanceContainerProps) => {
       }, [transactions]);
 
       const balance = income - expense;
-
-
 
       return (
             <div className="balance-container">

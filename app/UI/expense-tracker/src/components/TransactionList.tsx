@@ -1,22 +1,23 @@
 import React, { useMemo } from "react";
 import TransactionItem from "./TransactionItem";
-import type { Transaction } from "../model/types";
 import { sortTransactions } from "../utils/sorting";
 import { filterByContains } from "../utils/filter";
+import { useTransactions } from "../state/AppContext";
 
 interface TransactionListProps {
-      transactions: Array<Transaction>;
       filterBy: string;
       sortBy: string;
 }
 
 export function TransactionList(props: TransactionListProps) {
+      const transactions = useTransactions();
+
       const displayableTransactions = useMemo(() => {
-            const filteredTransactions = filterByContains(props.transactions, props.filterBy);
+            const filteredTransactions = filterByContains(transactions, props.filterBy);
             const sortedTransactions = sortTransactions(filteredTransactions, props.sortBy);
             return sortedTransactions;
-      }, [props.transactions, props.sortBy, props.filterBy]);
-
+      }, [props.sortBy, props.filterBy]);
+      
       return (
             <ul id="transaction-list">
                   {displayableTransactions.map((t) => {

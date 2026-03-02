@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import type { TransactionUI } from "../model/types";
 import { dataProvider } from "../providers/dataProvider";
-import { useRefreshList } from "./MainContainer";
+import { useRefreshList } from "../state/AppContext";
 
 type FormContainerProps = {
 };

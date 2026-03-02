@@ -1,8 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { TransactionList } from "./TransactionList";
-
 interface TransactionContainerProps {
-      transactions: any[];
 }
 
 const TransactionContainer = (props: TransactionContainerProps) => {
@@ -49,7 +47,7 @@ const TransactionContainer = (props: TransactionContainerProps) => {
                         </div>
                   </div>
 
-                  <TransactionList transactions={props.transactions} filterBy={filterCriteria} sortBy={sortCriteria} />
+                  <TransactionList filterBy={filterCriteria} sortBy={sortCriteria} />
             </div >
       );
 };

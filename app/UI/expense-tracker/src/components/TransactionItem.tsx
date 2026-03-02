@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { formatCurrency } from '../utils/helpers';
 import type { Transaction, TransactionUI } from '../model/types';
-import { useEditTransaction, useRemoveItem } from './MainContainer';
+import { useEditTransaction, useRemoveItem } from '../state/AppContext';
 
 type TransactionProps = {
       transaction: Transaction;
@@ -9,8 +9,7 @@ type TransactionProps = {
 
 const TransactionItem = ({ transaction }: TransactionProps) => {
       const removeItemCallback = useRemoveItem();
-      const editTransactionCallback = useEditTransaction();
-      
+      const editTransactionCallback = useEditTransaction();      
 
       const editPrompt = useCallback(() => {
             let inputDescription = prompt("Enter new DESCRIPTION:", transaction.description);
