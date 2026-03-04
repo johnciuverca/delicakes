@@ -9,7 +9,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PID_DIR="${SCRIPT_DIR}/.pids"
-LAUNCH_DIR="${PID_DIR}/launchers"
 
 API_DIR="${ROOT_DIR}/api"
 APP_SERVER_DIR="${ROOT_DIR}/app/server"
@@ -31,10 +30,9 @@ if [[ $# -gt 0 ]]; then
 fi
 
 mkdir -p "$PID_DIR"
-mkdir -p "$LAUNCH_DIR"
 
-if ! command -v open >/dev/null 2>&1; then
-  echo "open not found; this script requires macOS." >&2
+if ! command -v osascript >/dev/null 2>&1; then
+  echo "osascript not found; this script requires macOS." >&2
   exit 1
 fi
 
@@ -63,52 +61,42 @@ ensure_not_running_or_cleanup "$APP_PID_FILE" "app-server"
 ensure_not_running_or_cleanup "$DATA_PID_FILE" "data-api"
 ensure_not_running_or_cleanup "$WATCH_PID_FILE" "watch"
 
-write_launcher() {
-  local path="$1"
-  shift
+escape_applescript_string() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//\"/\\\"}"
+  value="${value//$'\n'/\\n}"
+  printf '%s' "$value"
+}
 
-  cat >"$path" <<'EOF'
-#!/usr/bin/env bash
-set -euo pipefail
+open_terminal_window() {
+  local command="$1"
+  local escaped_command
+  escaped_command="$(escape_applescript_string "$command")"
+
+  osascript <<EOF
+tell application "Terminal"
+  do script "$escaped_command"
+  activate
+end tell
 EOF
-  cat >>"$path" <<EOF
-$*
-EOF
-  chmod +x "$path"
 }
 
 echo "Opening Terminal windows and starting servers..."
 
-DATA_LAUNCHER="${LAUNCH_DIR}/01-data-api.command"
-write_launcher "$DATA_LAUNCHER" "echo \"\$\$\" > \"${DATA_PID_FILE}\"
-cd \"${API_DIR}\"
-exec npm run dev"
+DATA_COMMAND="$(printf 'echo "$$" > %q; cd %q; exec npm run dev' "$DATA_PID_FILE" "$API_DIR")"
 
-APP_LAUNCHER="${LAUNCH_DIR}/02-app-server.command"
-write_launcher "$APP_LAUNCHER" "echo \"\$\$\" > \"${APP_PID_FILE}\"
-cd \"${APP_SERVER_DIR}\"
-npm run mainui:build
-npm run expense-tracker:build
-exec npm run dev"
+APP_COMMAND="$(printf 'echo "$$" > %q; cd %q; npm run mainui:build; npm run expense-tracker:build; exec npm run dev' "$APP_PID_FILE" "$APP_SERVER_DIR")"
 
-WATCH_LAUNCHER="${LAUNCH_DIR}/03-ui-watch.command"
 if [[ "$WITH_WATCH" -eq 1 ]]; then
-  write_launcher "$WATCH_LAUNCHER" "echo \"\$\$\" > \"${WATCH_PID_FILE}\"
-cd \"${MAINUI_DIR}\"
-npm run watch &
-MAINUI_WATCH_PID=\$!
-cd \"${EXPENSE_TRACKER_DIR}\"
-npm run watch &
-EXPENSE_WATCH_PID=\$!
-trap 'kill \"\${MAINUI_WATCH_PID}\" \"\${EXPENSE_WATCH_PID}\" 2>/dev/null || true' EXIT INT TERM
-wait"
+  WATCH_COMMAND="$(printf 'echo "$$" > %q; cd %q; npm run watch & MAINUI_WATCH_PID=$!; cd %q; npm run watch & EXPENSE_WATCH_PID=$!; trap '\''kill "$MAINUI_WATCH_PID" "$EXPENSE_WATCH_PID" 2>/dev/null || true'\'' EXIT INT TERM; wait' "$WATCH_PID_FILE" "$MAINUI_DIR" "$EXPENSE_TRACKER_DIR")"
 fi
 
-open -a Terminal "$APP_LAUNCHER"
-open -a Terminal "$DATA_LAUNCHER"
+open_terminal_window "$APP_COMMAND"
+open_terminal_window "$DATA_COMMAND"
 
 if [[ "$WITH_WATCH" -eq 1 ]]; then
-  open -a Terminal "$WATCH_LAUNCHER"
+  open_terminal_window "$WATCH_COMMAND"
 else
   rm -f "$WATCH_PID_FILE"
 fi
