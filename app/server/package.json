@@ -4,16 +4,19 @@
       "description": "Delicakes Node.js application",
       "main": "dist/server.js",
       "scripts": {
-                  "build": "tsc -p tsconfig.json",
-                  "start": "node dist/server.js",
-                  "dev": "nodemon --watch src --ext ts --exec \"npm run build && node dist/server.js\"",
+            "build": "tsc -p tsconfig.json",
+            "start": "node dist/server.js",
+            "dev": "nodemon --watch src --ext ts --exec \"npm run build && node dist/server.js\"",
 
-                  "app:dev": "PORT=3000 npm run dev",
-                  "api:dev": "PORT=3100 npm --prefix ../../api run dev",
-                  "mainui:build": "npm --prefix ../UI/mainUI run build",
-                  "mainui:watch": "npm --prefix ../UI/mainUI run watch",
-                  "expense-tracker:build": "npm --prefix ../UI/expense-tracker run build",
-                  "expense-tracker:watch": "npm --prefix ../UI/expense-tracker run watch"
+            "app:dev": "PORT=3000 npm run dev",
+            "api:dev": "PORT=3100 npm --prefix ../../api run dev",
+            "mainui:build": "npm --prefix ../UI/mainUI run build",
+            "mainui:watch": "npm --prefix ../UI/mainUI run watch",
+            "expense-tracker:build": "npm --prefix ../UI/expense-tracker run build",
+            "expense-tracker:watch": "npm --prefix ../UI/expense-tracker run watch"
+            ,
+            "win:mainui:build": "npm --prefix ..\\UI\\mainUI run win:build",
+            "win:expense-tracker:build": "npm --prefix ..\\UI\\expense-tracker run win:build"
       },
       "keywords": [],
       "author": "",

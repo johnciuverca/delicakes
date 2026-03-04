@@ -6,8 +6,13 @@
       "type": "module",
       "scripts": {
             "test": "echo \"Error: no test specified\" && exit 1",
+            "clean": "rm -rf dist",
             "build": "TS_NODE_PROJECT=tsconfig.webpack.json node -r ts-node/register ./node_modules/webpack/bin/webpack.js --config webpack.config.cts --mode production",
             "watch": "TS_NODE_PROJECT=tsconfig.webpack.json node -r ts-node/register ./node_modules/webpack/bin/webpack.js --config webpack.config.cts --mode development --watch"
+            ,
+            "win:clean": "if exist dist rmdir /S /Q dist",
+            "win:build": "set TS_NODE_PROJECT=tsconfig.webpack.json&& node -r ts-node/register .\\node_modules\\webpack\\bin\\webpack.js --config webpack.config.cts --mode production",
+            "win:watch": "set TS_NODE_PROJECT=tsconfig.webpack.json&& node -r ts-node/register .\\node_modules\\webpack\\bin\\webpack.js --config webpack.config.cts --mode development --watch"
       },
       "keywords": [],
       "author": "",
