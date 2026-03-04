@@ -30,7 +30,7 @@ if "%WITH_WATCH%"=="1" (
 )
 
 echo Starting data api terminal...
-for /f %%P in ('powershell -NoProfile -Command "$p = Start-Process -FilePath cmd.exe -ArgumentList '/k','title Delicakes Data API && cd /d \"%API_DIR%\" && set PORT=3100 && npm run dev' -PassThru; $p.Id"') do set "DATA_PID=%%P"
+for /f %%P in ('powershell -NoProfile -Command "$p = Start-Process -FilePath cmd.exe -ArgumentList '/k','title Delicakes Data API && cd /d \"%API_DIR%\" && npm run dev' -PassThru; $p.Id"') do set "DATA_PID=%%P"
 if not defined DATA_PID (
   echo Failed to start data api terminal.
   exit /b 1
@@ -38,7 +38,7 @@ if not defined DATA_PID (
 > "%PID_DATA%" echo !DATA_PID!
 
 echo Starting app server terminal...
-for /f %%P in ('powershell -NoProfile -Command "$p = Start-Process -FilePath cmd.exe -ArgumentList '/k','title Delicakes App Server && cd /d \"%APP_SERVER_DIR%\" && npm run win:mainui:build && npm run win:expense-tracker:build && set PORT=3000 && npm run dev' -PassThru; $p.Id"') do set "APP_PID=%%P"
+for /f %%P in ('powershell -NoProfile -Command "$p = Start-Process -FilePath cmd.exe -ArgumentList '/k','title Delicakes App Server && cd /d \"%APP_SERVER_DIR%\" && npm run win:mainui:build && npm run win:expense-tracker:build && npm run dev' -PassThru; $p.Id"') do set "APP_PID=%%P"
 if not defined APP_PID (
   echo Failed to start app server terminal.
   exit /b 1
