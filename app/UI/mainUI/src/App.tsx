@@ -14,12 +14,22 @@ import { AppContext } from "./state/AppContext";
 
 export function App(): React.JSX.Element {
     const [accountName, setAccountName] = React.useState<string | null>(null);
+    const [email, setEmail] = React.useState<string | null>(null);
+    
+    const [userState, setUserState] = React.useState<{accountName: string | null, email: string | null}>({
+        accountName: null,
+        email: null
+    });
     
     return (  
     <div className="container">
         <AppContext value={{
             accountName: accountName,
-            setAccountName: setAccountName
+            setAccountName: setAccountName,
+            email: email,
+            setEmail: setEmail,
+            user: userState,
+            setUser: setUserState
         }}>
         <BrowserRouter>
             <Header/>

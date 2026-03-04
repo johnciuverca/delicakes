@@ -1,8 +1,8 @@
 import { useLocation } from 'react-router-dom';
 import NavAnchor from './NavAnchor';
 import { NavLinkItem } from './shared';
-import { useEffect, useMemo, useState } from 'react';
-import { AppContext, useAccountName } from '../state/AppContext';
+import { useMemo } from 'react';
+import { useAccountName } from '../state/AppContext';
 import React from 'react';
 
 const leftLinks: NavLinkItem[] = [
@@ -24,16 +24,15 @@ const links : Array<NavLinkItem> = [
 
 export function NavBar(): React.JSX.Element {
 
-    const accountName = useAccountName();
+    const [accountName] = useAccountName();
     const { pathname: currentPath } = useLocation();
-    const [authenticated, setAuthenticated] = useState(false);
     
     const customizedProfileLink = useMemo(() => {
         const name = accountName || "USER";
         return { ...profileLink, label: `Hi, ${name}!` };
     }, [profileLink, accountName]);
     
-    const authLink = useMemo(() => authenticated ? customizedProfileLink : loginLink, [authenticated]);
+    const authLink = useMemo(() => accountName ? customizedProfileLink : loginLink, [accountName, customizedProfileLink]);
     const displayLinks = useMemo(() => [...links, authLink], [links, authLink]);
     
     const displayLeftLinks = useMemo(() => displayLinks.filter(link => link.position === 'left'), [displayLinks]);

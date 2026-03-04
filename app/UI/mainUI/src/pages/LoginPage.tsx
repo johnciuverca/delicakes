@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useLoginStylesheet } from "../hooks/LoginStylesheet";
-import { useAccountName } from "../state/AppContext";
+import { useAccountName, useEmail } from "../state/AppContext";
+import { useStylesheet } from "../hooks/StyleHooks";
 
 type LoginResponse = {
     user: { name: string, email: string };
@@ -9,7 +9,7 @@ type LoginResponse = {
 };
 
 export function LoginPage(): React.JSX.Element {
-    useLoginStylesheet();
+    useStylesheet("/style/login.css");
 
     const navigate = useNavigate();
     const [email, setEmail] = useState("admin");
@@ -18,6 +18,8 @@ export function LoginPage(): React.JSX.Element {
     const canSubmit = useMemo(() => email.length > 0, [email]);
 
     const [_accountName, setAccountName] = useAccountName();
+    const [_accountEmail, setAccountEmail] = useEmail();
+    
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -40,8 +42,9 @@ export function LoginPage(): React.JSX.Element {
                 
                 //  document.cookie = `auth=${data.authCookie}; path=/`;
                 setAccountName(data.user.name);
+                setAccountEmail(data.user.email);
 
-                navigate("/", { replace: true });
+                navigate("/", { replace: true }); 
                 return;
             }
 
