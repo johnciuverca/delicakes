@@ -24,6 +24,26 @@ From the repo root:
 ./scripts/stop-servers.sh
 ```
 
+## Windows (batch scripts)
+
+From the repo root in `cmd.exe` or PowerShell:
+
+```bat
+scripts\start-servers.bat
+```
+
+Optional UI watch mode (opens a third terminal for `mainUI` + `expense-tracker` watches):
+
+```bat
+scripts\start-servers.bat --watch
+```
+
+Stop all terminals started by the batch script:
+
+```bat
+scripts\stop-servers.bat
+```
+
 ### Notes
 
 - `app/server` is the main entrypoint (it also builds/watches `mainUI` and `expense-tracker`).
