@@ -1,16 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAccountName, useEmail } from "../state/AppContext";
 import { useStylesheet } from "../hooks/StyleHooks";
+import { useUserState } from "../state/AppContext";
 
 export function ProfilePage(): React.JSX.Element {
 
     useStylesheet("/style/profile.css");
 
     const navigate = useNavigate();
-    const [accountName, setAccountName] = useAccountName();
-    const [email, setEmail] = useEmail();
-    
+    const [loggedInUser, setLoggedInUser] = useUserState();
     
     return (
         <div className="form-wrapper profile page">
@@ -27,8 +25,8 @@ export function ProfilePage(): React.JSX.Element {
                     </div>
 
                     <div className="profile-info">
-                        <p><strong>Name:</strong> {accountName ?? "-"}</p>
-                        <p><strong>Email:</strong> {email ?? "-"}</p>
+                        <p><strong>Name:</strong> {loggedInUser?.accountName ?? "-"}</p>
+                        <p><strong>Email:</strong> {loggedInUser?.email ?? "-"}</p>
 
                         <button 
                             className="profile-btn"
@@ -47,8 +45,7 @@ export function ProfilePage(): React.JSX.Element {
                                         },
                                     }).then((res) => {
                                         if (res.status === 200) {
-                                            setAccountName(null);
-                                            setEmail(null);
+                                            setLoggedInUser(null);
                                             navigate("/login"); 
                                             return;
                                         }

@@ -1,47 +1,28 @@
 import React from "react";
 
 type User = {
-    accountName: string | null;
-    email: string | null;
+    accountName: string;
+    email: string;
 };
 
 type AppContextType = {
-	accountName: string | null;
-    setAccountName: (name: string | null) => void;
-    email: string | null;
-    setEmail: (email: string | null) => void;
-    user: User;
-    setUser: (user: User) => void;
+    user: User | null;
+    setUser: (user: User | null) => void;
 };
 
 export const AppContext = React.createContext<AppContextType | null>(null);
 
-export function useUserState(): [User, (user: User) => void] {
+export function useUserState(): [User | null, (user: User | null) => void] {
     const context = React.useContext(AppContext);
     if (!context) {
         throw new Error("useUserState must be used within an AppContext.Provider");
     }
-    const { accountName, setAccountName, email, setEmail } = context;
-    const user: User = { accountName, email };
-    const setUser = (user: User) => {
-        setAccountName(user.accountName);
-        setEmail(user.email);
+    const user = context.user 
+        ? { accountName: context.user.accountName, email: context.user.email }
+        : null;
+        
+    const setUser = (user: User | null) => {
+        context.setUser(user);
     };
     return [user, setUser];
-}
-
-export function useAccountName(): [(string | null), ((name: string | null) => void)] {
-    const context = React.useContext(AppContext);
-    if (!context) {
-        throw new Error("useAccountName must be used within an AppContext.Provider");
-    }
-    return [context.accountName, context.setAccountName];
-}
-
-export function useEmail(): [(string | null), ((email: string | null) => void)] {
-    const context = React.useContext(AppContext);
-    if (!context) {
-        throw new Error("useEmail must be used within an AppContext.Provider");
-    }
-    return [context.email, context.setEmail];
 }

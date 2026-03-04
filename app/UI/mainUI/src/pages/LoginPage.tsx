@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAccountName, useEmail } from "../state/AppContext";
 import { useStylesheet } from "../hooks/StyleHooks";
+import { useUserState } from "../state/AppContext";
 
 type LoginResponse = {
     user: { name: string, email: string };
@@ -17,9 +17,7 @@ export function LoginPage(): React.JSX.Element {
 
     const canSubmit = useMemo(() => email.length > 0, [email]);
 
-    const [_accountName, setAccountName] = useAccountName();
-    const [_accountEmail, setAccountEmail] = useEmail();
-    
+    const [_loggedInUser, setLoggedInUser] = useUserState();
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -41,8 +39,10 @@ export function LoginPage(): React.JSX.Element {
                 console.log("Login successful:", data);
                 
                 //  document.cookie = `auth=${data.authCookie}; path=/`;
-                setAccountName(data.user.name);
-                setAccountEmail(data.user.email);
+                setLoggedInUser({
+                    accountName: data.user.name,
+                    email: data.user.email,
+                });
 
                 navigate("/", { replace: true }); 
                 return;

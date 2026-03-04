@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useStylesheet } from "../hooks/StyleHooks";
 
 export function RegisterPage() {
+
     useStylesheet("/style/login.css");
+    
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");

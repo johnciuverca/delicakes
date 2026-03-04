@@ -13,37 +13,27 @@ import { ProfilePage } from "./pages/ProfiePage";
 import { AppContext } from "./state/AppContext";
 
 export function App(): React.JSX.Element {
-    const [accountName, setAccountName] = React.useState<string | null>(null);
-    const [email, setEmail] = React.useState<string | null>(null);
-    
-    const [userState, setUserState] = React.useState<{accountName: string | null, email: string | null}>({
-        accountName: null,
-        email: null
-    });
+    const [userState, setUserState] = React.useState<{ accountName: string, email: string } | null>(null);
     
     return (  
     <div className="container">
         <AppContext value={{
-            accountName: accountName,
-            setAccountName: setAccountName,
-            email: email,
-            setEmail: setEmail,
             user: userState,
             setUser: setUserState
         }}>
-        <BrowserRouter>
-            <Header/>
-            <NavBar />
-            <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/recipes" element={<RecipesPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage/>}/>
-                <Route path="/profile" element={<ProfilePage/>}/>
-            </Routes>
-        </BrowserRouter>
+            <BrowserRouter>
+                <Header/>
+                <NavBar />
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/recipes" element={<RecipesPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage/>}/>
+                    <Route path="/profile" element={<ProfilePage/>}/>
+                </Routes>
+            </BrowserRouter>
         </AppContext>
     </div>
     );
