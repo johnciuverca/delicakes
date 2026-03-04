@@ -11,6 +11,7 @@ import { NavBar } from "./components/NavBar";
 import { RegisterPage } from "./pages/RegisterPage";
 import { ProfilePage } from "./pages/ProfiePage";
 import { AppContext } from "./state/AppContext";
+import { ChangePasswordPage } from "./pages/ChangePasswordPage";
 
 export function App(): React.JSX.Element {
     const [userState, setUserState] = React.useState<{ accountName: string, email: string } | null>(null);
@@ -32,6 +33,7 @@ export function App(): React.JSX.Element {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage/>}/>
                     <Route path="/profile" element={<ProfilePage/>}/>
+                    <Route path="/change-password" element={<ChangePasswordPage/>}/>
                 </Routes>
             </BrowserRouter>
         </AppContext>
