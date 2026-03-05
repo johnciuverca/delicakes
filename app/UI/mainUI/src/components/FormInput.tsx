@@ -4,6 +4,8 @@ type FormInputProps = {
 	id: string;
 	inputType: "text " | "password";
     placeholder?: string;
+    value?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function FormInput(props: FormInputProps) {
@@ -14,10 +16,10 @@ export function FormInput(props: FormInputProps) {
 			<label htmlFor={props.id}>{props.placeholder}</label>
 			<input 
 				id={props.id} 
-				value={value}
-				type="password" 
+				value={props.value ?? value}
+				type={props.inputType} 
 				placeholder={props.placeholder}
-				onChange={(e) => setValue(e.target.value)} 
+				onChange={props.onChange ?? ((e) => setValue(e.target.value))} 
 			/>
 		</>
 	);
