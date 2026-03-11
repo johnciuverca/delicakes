@@ -1,11 +1,13 @@
 import React, { useCallback } from "react";
 import { FormInput } from "../components/FormInput";
 import { useStylesheet } from "../hooks/StyleHooks";
+import { useUserState } from "../state/AppContext";
 
 export function ChangePasswordPage() {
 
     useStylesheet("/style/login.css");
 
+    const [loggedInUser, _setLoggedInUser] = useUserState();
     const [currentPassword, setCurrentPassword] = React.useState("");
     const [newPassword, setNewPassword] = React.useState("");
     const [confirmPassword, setConfirmPassword] = React.useState("");
@@ -14,21 +16,50 @@ export function ChangePasswordPage() {
 
     const onSubmit = useCallback( (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // reset error and success state before moving forward
         setError("");
         setSuccess("");
 
+        // Vaidate email, current and new passwords
+
+        if (!loggedInUser?.email) {
+            setError("User email is not available.");
+            return;
+        }
+        
         if (!currentPassword || !newPassword || !confirmPassword) {
             setError("All fields are required.");
             return;
         }
-
+        
         if (newPassword !== confirmPassword) {
             setError("New password and confirm password do not match.");
             return;
         }
-
-        // Add logic to change the password here
-        setSuccess("Password changed successfully.");
+        
+        // Pass data to server 
+        fetch("/change-password", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: loggedInUser.email,
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+            })
+        }).then(res => {
+            if (!res.ok) {
+                return res.json().then(data => {
+                    setError(data.message || "Failed to change password.");
+                });
+            } else {
+                setSuccess("Password changed successfully."); 
+            }      }
+        ).catch(() => { 
+            setError("Failed to change password.");
+        });
     }, [currentPassword, newPassword, confirmPassword]);
 
     return (

@@ -107,6 +107,35 @@ app.post("/logout", (req: Request, res: Response) => {
     res.status(200).json({ message: "Logged out" });
 });
 
+type ChangePasswordBody = {
+    email: string;
+    currentPassword: string;
+    newPassword: string;
+}
+
+app.post("/change-password", (req: Request<any, any, ChangePasswordBody>, res) => { 
+    // UI -- post-request -->  SERVER  -- queries user --> DB
+    //                         SERVER  <-- queries user -- DB
+    //                         SERVER  -- queries user --> DB
+    //                         SERVER  <-- queries user -- DB
+    // UI <-- response     --  SERVER  <-- queries user -- DB
+    
+    const email = req.body.email;
+    const password = req.body.currentPassword;
+    const newPassword = req.body.newPassword;
+    
+    // 1 Change Password
+    
+    // Q: whom's password?
+    // A: user's password
+    // Q: How do we identify the user?
+    // A: via email.
+    
+    // 1.1 Validate password matches current password 
+    // 1.2.a If valid, update password to new password
+    // 1.2.b If not valid, return error
+})
+
 // Serve static files from the expense-tracker folder (CSS, JS, etc.)
 app.use(
     "/expense-tracker", (req: Request, res: Response, next: NextFunction) => {
