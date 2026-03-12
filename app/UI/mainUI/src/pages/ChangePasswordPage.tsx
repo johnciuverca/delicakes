@@ -56,6 +56,9 @@ export function ChangePasswordPage() {
                 });
             } else {
                 setSuccess("Password changed successfully."); 
+                setCurrentPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
             }      }
         ).catch(() => { 
             setError("Failed to change password.");

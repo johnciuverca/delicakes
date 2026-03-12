@@ -4,7 +4,8 @@ import express, { type NextFunction, type Request, type Response } from "express
 import path from "path";
 import cookieParser from "cookie-parser";
 import { authenticateUser } from "./model/user";
-import { insertUser } from "./data/dbStorage";
+import { getUserByEmail, insertUser, updateUserPassword } from "./data/dbStorage";
+import { hashPassword, passwordsMatch } from "./security/utils";
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -121,8 +122,31 @@ app.post("/change-password", (req: Request<any, any, ChangePasswordBody>, res) =
     // UI <-- response     --  SERVER  <-- queries user -- DB
     
     const email = req.body.email;
-    const password = req.body.currentPassword;
+    const currentPassword = req.body.currentPassword;
     const newPassword = req.body.newPassword;
+
+    getUserByEmail(email).then(user => {
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return Promise.reject();
+        }
+        if (!passwordsMatch(currentPassword, user.passwordHash)) {
+            res.status(401).json({ message: "Current password is incorrect" });
+            return Promise.reject();
+        }
+
+        const newPasswordHash = hashPassword(newPassword);
+
+        return updateUserPassword(email, newPasswordHash)
+                .then(() => {
+                    res.status(200).json({ message: "Password changed successfully" });
+                })
+                .catch((err) => {
+                    // eslint-disable-next-line no-console
+                    console.error("Error updating password:", err);
+                    res.status(500).json({ message: "Failed to change password" });
+                });
+            })
     
     // 1 Change Password
     

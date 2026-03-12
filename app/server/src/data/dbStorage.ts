@@ -82,3 +82,13 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
   };
 }
 
+export function updateUserPassword(email: string, newPasswordHash: string): Promise<void> {
+  return pool.
+  query(
+    `UPDATE public.users
+     SET password_hash = $1
+     WHERE email = $2`,
+    [newPasswordHash, email.toLowerCase().trim()],
+  ).then(() => {});
+}
+
