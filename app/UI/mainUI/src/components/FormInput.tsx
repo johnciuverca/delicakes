@@ -6,6 +6,7 @@ type FormInputProps = {
     placeholder?: string;
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 export function FormInput(props: FormInputProps) {
@@ -19,7 +20,8 @@ export function FormInput(props: FormInputProps) {
 				value={props.value ?? value}
 				type={props.inputType} 
 				placeholder={props.placeholder}
-				onChange={props.onChange ?? ((e) => setValue(e.target.value))} 
+				onChange={props.onChange ?? ((e) => setValue(e.target.value))}
+                onBlur={props.onBlur}
 			/>
 		</>
 	);
