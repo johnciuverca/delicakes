@@ -13,43 +13,14 @@ export function ChangePasswordPage() {
     const [confirmPassword, setConfirmPassword] = React.useState("");
     const [error, setError] = React.useState("");
     const [success, setSuccess] = React.useState("");
-    const [touched, setTouched] = React.useState({
-        currentPassword: false,
-        newPassword: false,
-        confirmPassword: false,
-    });
-
-    function validateCurrentPassword(value: string): string {
-        if(!value) {
-            return "Current password is required.";
-        }
-        return "";
-    }
-
-    function validateNewPassword(value: string): string {
-        if(!value) {
-            return "New password is required.";
-        }
-        return "";
-    }
-
-    function validateConfirmPassword(value: string): string {
-        if(!value) {
-            return "Confirm password is required.";
-        }
-        if(value !== newPassword) {
-            return "Passwords do not match.";
-        }
-        return "";
-    }
-
-    const currentPasswordError = touched.currentPassword && validateCurrentPassword(currentPassword);
-    const newPasswordError = touched.newPassword && validateNewPassword(newPassword);
-    const confirmPasswordError = touched.confirmPassword && validateConfirmPassword(confirmPassword);
     
-    const handleBlur = (field: keyof (typeof touched)) => {
-        setTouched(prev => ({ ...prev, [field]: true }));
-    };
+    const validateRequired = useCallback((value: string, fieldName: string): string | null => {
+        return value || `${fieldName} is required.`;
+    }, []);
+    
+    const validatePasswordMatch = useCallback((newPassword: string , confirmPassword: string): string | null => {
+        return confirmPassword !== newPassword ? "Passwords do not match." : null;
+    }, []);
 
     const onSubmit = useCallback( (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -57,11 +28,6 @@ export function ChangePasswordPage() {
         // reset error and success state before moving forward
         setError("");
         setSuccess("");
-        setTouched({
-            currentPassword: true,
-            newPassword: true,
-            confirmPassword: true,
-        });
 
         // Vaidate email, current and new passwords
 
@@ -101,11 +67,6 @@ export function ChangePasswordPage() {
                 setCurrentPassword("");
                 setNewPassword("");
                 setConfirmPassword("");
-                setTouched({
-                    currentPassword: false,
-                    newPassword: false,
-                    confirmPassword: false,
-                });
             }
         }).catch(() => { 
             setError("Failed to change password.");
@@ -123,27 +84,27 @@ export function ChangePasswordPage() {
                         placeholder="Current Password" 
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
-                        onBlur={() => handleBlur("currentPassword")}
+                        onBlurValidation={value => validateRequired(value, "Current password")}
                     />
-                    {currentPasswordError && <div style={{ color: "red" }} >{currentPasswordError}</div>}
                     <FormInput 
                         id="newPassword"
                         inputType="password"
                         placeholder="New Password"
                         value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}    
-                        onBlur={() => handleBlur("newPassword")}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        onBlurValidation={value => validateRequired(value, "New password")}
                     />
-                    {newPasswordError && <div style={{ color: "red" }} >{newPasswordError}</div>}
                     <FormInput
                         id="confirmPassword"
                         inputType="password"
                         placeholder="Confirm Password"  
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        onBlur={() => handleBlur("confirmPassword")}
+                        onBlurValidation={[
+                            value => validateRequired(value, "Confirm password"),
+                            value => validatePasswordMatch(newPassword, value)
+                        ]}
                     />
-                    {confirmPasswordError && <div style={{ color: "red" }} >{confirmPasswordError}</div>}
                     <button type="submit">Change Password</button>
                     {error && <div style={{ color: "red" }} >{error}</div>}
                     {success && <div style={{ color: "green" }} >{success}</div>}
