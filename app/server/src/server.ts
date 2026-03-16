@@ -115,12 +115,6 @@ type ChangePasswordBody = {
 }
 
 app.post("/change-password", (req: Request<any, any, ChangePasswordBody>, res) => { 
-    // UI -- post-request -->  SERVER  -- queries user --> DB
-    //                         SERVER  <-- queries user -- DB
-    //                         SERVER  -- queries user --> DB
-    //                         SERVER  <-- queries user -- DB
-    // UI <-- response     --  SERVER  <-- queries user -- DB
-    
     const email = req.body.email;
     const currentPassword = req.body.currentPassword;
     const newPassword = req.body.newPassword;
@@ -138,26 +132,15 @@ app.post("/change-password", (req: Request<any, any, ChangePasswordBody>, res) =
         const newPasswordHash = hashPassword(newPassword);
 
         return updateUserPassword(email, newPasswordHash)
-                .then(() => {
-                    res.status(200).json({ message: "Password changed successfully" });
-                })
-                .catch((err) => {
-                    // eslint-disable-next-line no-console
-                    console.error("Error updating password:", err);
-                    res.status(500).json({ message: "Failed to change password" });
-                });
+            .then(() => {
+                res.status(200).json({ message: "Password changed successfully" });
             })
-    
-    // 1 Change Password
-    
-    // Q: whom's password?
-    // A: user's password
-    // Q: How do we identify the user?
-    // A: via email.
-    
-    // 1.1 Validate password matches current password 
-    // 1.2.a If valid, update password to new password
-    // 1.2.b If not valid, return error
+            .catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error("Error updating password:", err);
+                res.status(500).json({ message: "Failed to change password" });
+            });
+        })
 })
 
 // Serve static files from the expense-tracker folder (CSS, JS, etc.)

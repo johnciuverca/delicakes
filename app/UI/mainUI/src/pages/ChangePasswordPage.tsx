@@ -15,7 +15,7 @@ export function ChangePasswordPage() {
     const [success, setSuccess] = React.useState("");
     
     const validateRequired = useCallback((value: string, fieldName: string): string | null => {
-        return value || `${fieldName} is required.`;
+        return value ? null : `${fieldName} is required.`;
     }, []);
     
     const validatePasswordMatch = useCallback((newPassword: string , confirmPassword: string): string | null => {
@@ -79,7 +79,7 @@ export function ChangePasswordPage() {
                 <div className="form-container">
                     <h2>Change Password</h2>
                     <FormInput 
-                        id="currentPassword" 
+                        id="currentPassword"
                         inputType="password" 
                         placeholder="Current Password" 
                         value={currentPassword}

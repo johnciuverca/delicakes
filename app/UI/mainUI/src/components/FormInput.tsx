@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 
-type Validator = (value: string) => string | null;
+type ErrorMessage = string;
+type ValidationResult = ErrorMessage | null;
+type Validator = (value: string) => ValidationResult;
 
 type FormInputProps = {
 	id: string;
@@ -13,7 +15,7 @@ type FormInputProps = {
 
 export function FormInput(props: FormInputProps): React.JSX.Element {
 	const [value, setValue] = useState<string>(props.value ?? "");
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
 	
 	const handleBlur = useCallback(() => {
 		if (!props.onBlurValidation) {
