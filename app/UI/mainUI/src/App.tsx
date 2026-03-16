@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { HomePage } from "./pages/HomePage";
@@ -13,10 +13,28 @@ import { ProfilePage } from "./pages/ProfiePage";
 import { AppContext } from "./state/AppContext";
 import { ChangePasswordPage } from "./pages/ChangePasswordPage";
 
+const userCookieName = "user";
+
+function getUserCookie(): string | null {
+    const match = document.cookie.match(new RegExp('(^| )' + userCookieName + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+}
+
 export function App(): React.JSX.Element {
     const [userState, setUserState] = React.useState<{ accountName: string, email: string } | null>(null);
     
-    return (  
+    useEffect(() => {
+        const cookieValue = getUserCookie();
+        if (cookieValue) {
+            try {
+                setUserState(JSON.parse(cookieValue));
+            } catch {
+                setUserState(null);
+            }
+        }
+    }, []);
+    
+    return (
     <div className="container">
         <AppContext value={{
             user: userState,
