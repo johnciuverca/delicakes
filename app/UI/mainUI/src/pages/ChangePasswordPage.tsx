@@ -1,48 +1,46 @@
 import React, { useCallback } from "react";
-import { FormInput } from "../components/FormInput";
+import { useForm } from "react-hook-form";
 import { useStylesheet } from "../hooks/StyleHooks";
 import { useUserState } from "../state/AppContext";
+
+type ChangePasswordFormValues = {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+};
 
 export function ChangePasswordPage() {
 
     useStylesheet("/style/login.css");
 
     const [loggedInUser, _setLoggedInUser] = useUserState();
-    const [currentPassword, setCurrentPassword] = React.useState("");
-    const [newPassword, setNewPassword] = React.useState("");
-    const [confirmPassword, setConfirmPassword] = React.useState("");
     const [error, setError] = React.useState("");
     const [success, setSuccess] = React.useState("");
-    
-    const validateRequired = useCallback((value: string, fieldName: string): string | null => {
-        return value ? null : `${fieldName} is required.`;
-    }, []);
-    
-    const validatePasswordMatch = useCallback((newPassword: string , confirmPassword: string): string | null => {
-        return confirmPassword !== newPassword ? "Passwords do not match." : null;
-    }, []);
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+        reset,
+    } = useForm<ChangePasswordFormValues>({
+        mode: "onBlur",
+        defaultValues: {
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+        },
+    });
 
-    const onSubmit = useCallback( (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const newPasswordValue = watch("newPassword");
+
+    const onSubmit = useCallback((values: ChangePasswordFormValues) => {
 
         // reset error and success state before moving forward
         setError("");
         setSuccess("");
 
-        // Vaidate email, current and new passwords
-
         if (!loggedInUser?.email) {
             setError("User email is not available.");
-            return;
-        }
-        
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            setError("All fields are required.");
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            setError("New password and confirm password do not match.");
             return;
         }
         
@@ -54,8 +52,8 @@ export function ChangePasswordPage() {
             },
             body: JSON.stringify({
                 email: loggedInUser.email,
-                currentPassword: currentPassword,
-                newPassword: newPassword,
+                currentPassword: values.currentPassword,
+                newPassword: values.newPassword,
             })
         }).then(res => {
             if (!res.ok) {
@@ -64,47 +62,53 @@ export function ChangePasswordPage() {
                 });
             } else {
                 setSuccess("Password changed successfully."); 
-                setCurrentPassword("");
-                setNewPassword("");
-                setConfirmPassword("");
+                reset();
             }
         }).catch(() => { 
             setError("Failed to change password.");
         });
-    }, [currentPassword, newPassword, confirmPassword]);
+    }, [loggedInUser, reset]);
 
     return (
         <div className="form-wrapper">
-            <form className="changePassword-form" onSubmit={onSubmit}>
+            <form className="changePassword-form" onSubmit={handleSubmit(onSubmit)}>
                 <div className="form-container">
                     <h2>Change Password</h2>
-                    <FormInput 
+                    <label htmlFor="currentPassword">Current Password</label>
+                    <input
                         id="currentPassword"
-                        inputType="password" 
-                        placeholder="Current Password" 
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        onBlurValidation={value => validateRequired(value, "Current password")}
+                        type="password"
+                        placeholder="Current Password"
+                        {...register("currentPassword", {
+                            required: "Current password is required.",
+                        })}
                     />
-                    <FormInput 
+                    {errors.currentPassword?.message && <div>{errors.currentPassword.message}</div>}
+
+                    <label htmlFor="newPassword">New Password</label>
+                    <input
                         id="newPassword"
-                        inputType="password"
+                        type="password"
                         placeholder="New Password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        onBlurValidation={value => validateRequired(value, "New password")}
+                        {...register("newPassword", {
+                            required: "New password is required.",
+                        })}
                     />
-                    <FormInput
+                    {errors.newPassword?.message && <div>{errors.newPassword.message}</div>}
+
+                    <label htmlFor="confirmPassword">Confirm Password</label>
+                    <input
                         id="confirmPassword"
-                        inputType="password"
-                        placeholder="Confirm Password"  
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        onBlurValidation={[
-                            value => validateRequired(value, "Confirm password"),
-                            value => validatePasswordMatch(newPassword, value)
-                        ]}
+                        type="password"
+                        placeholder="Confirm Password"
+                        {...register("confirmPassword", {
+                            required: "Confirm password is required.",
+                            validate: (value) =>
+                                value === newPasswordValue || "Passwords do not match.",
+                            
+                        })}
                     />
+                    {errors.confirmPassword?.message && <div>{errors.confirmPassword.message}</div>}
                     <button type="submit">Change Password</button>
                     {error && <div style={{ color: "red" }} >{error}</div>}
                     {success && <div style={{ color: "green" }} >{success}</div>}

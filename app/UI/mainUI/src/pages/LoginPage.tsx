@@ -12,7 +12,7 @@ export function LoginPage(): React.JSX.Element {
     useStylesheet("/style/login.css");
 
     const navigate = useNavigate();
-    const [email, setEmail] = useState("admin");
+    const [email, setEmail] = useState("john");
     const [password, setPassword] = useState("0000");
 
     const canSubmit = useMemo(() => email.length > 0, [email]);
