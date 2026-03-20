@@ -17,7 +17,7 @@ export function LoginPage(): React.JSX.Element {
 
     const canSubmit = useMemo(() => email.length > 0, [email]);
 
-    const [_loggedInUser, setLoggedInUser] = useUserState();
+    const [, setLoggedInUser] = useUserState();
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

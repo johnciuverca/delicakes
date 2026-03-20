@@ -16,9 +16,9 @@ type LoginBody = {
 };
 
 type RegisterBody = {
-    email?: string;
-    password?: string;
-    name?: string;
+    email: string;
+    password: string;
+    name: string;
 };
 
 // Middleware
@@ -30,26 +30,29 @@ app.use(cookieParser());
 const mainUiDistDir = path.join(__dirname, "../../UI/mainUI/dist");
 const expenseTrackerDistDir = path.join(__dirname, "../../UI/expense-tracker/dist");
 
-const registerHandler = (req: Request, res: express.Response) => {
+const registerHandler = (req: Request<any, any, RegisterBody>, res: Response) => {
     const { email, password, name } = req.body ?? {};
     if (!email || !password || !name) {
         res.status(400).json({ message: "name, email, password and name are required" });
         return;
     }
-    insertUser({ email, password, name })
-    .then((user) => res.status(201).json(user))
-    .catch((err:any) => {
-        const error = err as { code?: string };
-
-        if (error.code === "23505") {
-            res.status(409).json({ message: "Email already exists" });
-            return;
-        }
-        res.status(500).json({
-            message: "Failed to create user",
-            error: err instanceof Error ? err.message : String(err)
+    
+    getUserByEmail(email)
+        .then((user) => {
+            if (user){
+                res.status(409).json({ message: "Email already exists" });
+                return;
+            } else {
+                insertUser({ email, password, name })
+                    .then((user) => res.status(201).json(user))
+                    .catch((err:any) => {
+                        res.status(500).json({
+                            message: "Failed to create user",
+                            error: err instanceof Error ? err.message : String(err)
+                        });
+                    });
+            }
         });
-    });
 }
 
 app.use("/expense-tracker1", (req: Request, res: Response, next: NextFunction) => {

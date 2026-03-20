@@ -13,7 +13,7 @@ export function ChangePasswordPage() {
 
     useStylesheet("/style/login.css");
 
-    const [loggedInUser, _setLoggedInUser] = useUserState();
+    const [loggedInUser] = useUserState();
     const [error, setError] = React.useState("");
     const [success, setSuccess] = React.useState("");
     const {

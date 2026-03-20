@@ -39,7 +39,17 @@ export function RegisterPage() {
                 alert("Registration failed. Please check your input and try again.");
                 return;
             }
-            alert("Registration failed. Please try again.");
+            let displayError = "Registration failed. Please try again.";
+            res.json()
+                .then(body => {
+                    if (body && body.message) {
+                        displayError = displayError + " " + body.message;
+                    }
+                    alert(displayError);
+                })
+                .catch(() => {
+                    alert(displayError);
+                });
         }).catch(() => {
             alert("Registration failed. Please try again.");
         });
