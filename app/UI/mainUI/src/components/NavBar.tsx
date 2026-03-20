@@ -6,12 +6,12 @@ import React from 'react';
 import { useUserState } from '../state/AppContext';
 
 const leftLinks: NavLinkItem[] = [
-    { label: "Recipes", href: "/pages/recipes", position: "left" },
-    { label: "About", href: "/pages/about", position: "left" },
+    { label: "Recipes", href: "/recipes", position: "left" },
+    { label: "About", href: "/about", position: "left" },
 ];
 
 const rightLinks: NavLinkItem[] = [
-    { label: "Contact", href: "/pages/contact", position: "right" },
+    { label: "Contact", href: "/contact", position: "right" },
 ];
 
 const loginLink: NavLinkItem = { label: "Login", href: "/login", position: "right" };
