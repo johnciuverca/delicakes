@@ -12,17 +12,43 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { ProfilePage } from "./pages/ProfiePage";
 import { AppContext } from "./state/AppContext";
 import { ChangePasswordPage } from "./pages/ChangePasswordPage";
-import { useUserCookie } from "./hooks/cookieHooks";
+import { User } from "./types/user";
 
+type MeResponse = {
+    user: { name: string, email: string };
+};
 
 export function App(): React.JSX.Element {
-    const [cookieUser, setCookieUser] = useUserCookie();
+    const [userState, setUserState] = React.useState<User | null>(null);
     
+    React.useEffect(() => {
+        fetch("/me", {
+            method: "GET",
+            credentials: "same-origin",
+        }).then((res) => {
+            if (res.status !== 200) {
+                setUserState(null);
+                return null;
+            }
+            return res.json();
+        }).then((data: MeResponse | null) => {
+            if (!data) {
+                return;
+            }
+            setUserState({
+                accountName: data.user.name,
+                email: data.user.email,
+            });
+        }).catch(() => {
+            setUserState(null);
+        });
+    }, []);
+
     return (
         <div className="container">
             <AppContext value={{
-                user: cookieUser,
-                setUser: setCookieUser
+                user: userState,
+                setUser: setUserState
             }}>
                 <BrowserRouter>
                     <Header/>

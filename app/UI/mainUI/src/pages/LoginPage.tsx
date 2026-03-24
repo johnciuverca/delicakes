@@ -5,7 +5,6 @@ import { useUserState } from "../state/AppContext";
 
 type LoginResponse = {
     user: { name: string, email: string };
-    authCookie: string;
 };
 
 export function LoginPage(): React.JSX.Element {
@@ -28,6 +27,7 @@ export function LoginPage(): React.JSX.Element {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "same-origin",
             body: JSON.stringify({
                 email: email,
                 psw: password,
@@ -38,7 +38,6 @@ export function LoginPage(): React.JSX.Element {
                 
                 console.log("Login successful:", data);
                 
-                //  document.cookie = `auth=${data.authCookie}; path=/`;
                 setLoggedInUser({
                     accountName: data.user.name,
                     email: data.user.email,

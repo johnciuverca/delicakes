@@ -43,6 +43,7 @@ export function ProfilePage(): React.JSX.Element {
                                         headers: {
                                             "Content-Type": "application/json",
                                         },
+                                        credentials: "same-origin",
                                     }).then((res) => {
                                         if (res.status === 200) {
                                             setLoggedInUser(null);
