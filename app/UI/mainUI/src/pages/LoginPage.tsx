@@ -41,6 +41,7 @@ export function LoginPage(): React.JSX.Element {
                 setLoggedInUser({
                     accountName: data.user.name,
                     email: data.user.email,
+                    role: "user", // Assuming role is not returned in this response, defaulting to "user"
                 });
 
                 navigate("/", { replace: true }); 

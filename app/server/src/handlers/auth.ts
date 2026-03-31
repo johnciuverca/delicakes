@@ -58,6 +58,7 @@ export const loginHandler = async (req: Request<Record<string, never>, unknown, 
 			const sanitizedUser = {
 				name: authenticationResult.user.name,
 				email: authenticationResult.user.email,  
+                role: authenticationResult.user.role,
 			};
 			res.cookie("auth", authCookie, {
 				httpOnly: true,
@@ -149,6 +150,7 @@ export const meHandler = (req: Request, res: Response) => {
                 user: {
                     name: user.name,
                     email: user.email,
+                    role: user.role,
                 }
             });
         })

@@ -15,7 +15,7 @@ import { ChangePasswordPage } from "./pages/ChangePasswordPage";
 import { User } from "./types/user";
 
 type MeResponse = {
-    user: { name: string, email: string };
+    user: { name: string, email: string, role: "user" | "admin" };
 };
 
 export function App(): React.JSX.Element {
@@ -38,6 +38,7 @@ export function App(): React.JSX.Element {
             setUserState({
                 accountName: data.user.name,
                 email: data.user.email,
+                role: data.user.role,
             });
         }).catch(() => {
             setUserState(null);

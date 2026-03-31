@@ -6,6 +6,7 @@ export type UserRecord = {
   email: string;
   passwordHash: string;
   name: string;
+  role: "user" | "admin";
 };
 
 export type NewUserInput = {
@@ -18,6 +19,7 @@ export type CreatedUser = {
   id: number;
   email: string;
   name: string;
+  role: "user" | "admin";
 };
 
 function getDatabaseUrl(): string {
@@ -46,9 +48,9 @@ export async function insertUser({ email, password, name }: NewUserInput): Promi
   const passwordHash = hashPassword(password);
   
   const result = await pool.query<CreatedUser>(
-    `INSERT INTO public.users (email, password_hash, "name")
-     VALUES ($1, $2, $3)
-     RETURNING id, email, "name"`,
+    `INSERT INTO public.users (email, password_hash, "name", role)
+     VALUES ($1, $2, $3, 'user')
+     RETURNING id, email, "name", role`,
     [email.toLowerCase().trim(), passwordHash, name.trim()],
   );
 
@@ -61,8 +63,9 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
     email: string;
     password_hash: string;
     name: string;
+    role: "user" | "admin";
   }>(
-    `SELECT id, email, password_hash, "name"
+    `SELECT id, email, password_hash, "name", role
      FROM public.users
      WHERE email = $1
      LIMIT 1`,
@@ -79,6 +82,7 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
     email: row.email,
     passwordHash: row.password_hash,
     name: row.name,
+    role: row.role,
   };
 }
 

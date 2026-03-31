@@ -9,8 +9,6 @@ type RecipeSlot = {
     imageSrc: string;
 };
 
-const ADMIN_EMAIL = "admin@delicakes.com";
-
 const initialRecipes: RecipeSlot[] = [
     {
         id: 1,
@@ -59,7 +57,7 @@ const initialRecipes: RecipeSlot[] = [
 export function RecipesPage() {
 
 const [loggedInUser] = useUserState();
-const isAdmin = loggedInUser?.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+const isAdmin = loggedInUser?.role === "admin";
 
 const [recipes, setRecipes] = useState<RecipeSlot[]>(initialRecipes);
 const [showAddForm, setShowAddForm] = useState(false);
