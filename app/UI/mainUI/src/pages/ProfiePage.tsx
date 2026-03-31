@@ -27,6 +27,7 @@ export function ProfilePage(): React.JSX.Element {
                     <div className="profile-info">
                         <p><strong>Name:</strong> {loggedInUser?.accountName ?? "-"}</p>
                         <p><strong>Email:</strong> {loggedInUser?.email ?? "-"}</p>
+                        <p><strong>Role:</strong> {loggedInUser?.role ?? "-"}</p>
 
                         <button 
                             className="profile-btn"

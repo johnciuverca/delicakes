@@ -4,7 +4,7 @@ import { useStylesheet } from "../hooks/StyleHooks";
 import { useUserState } from "../state/AppContext";
 
 type LoginResponse = {
-    user: { name: string, email: string };
+    user: { name: string, email: string, role: "user" | "admin" };
 };
 
 export function LoginPage(): React.JSX.Element {
@@ -41,7 +41,7 @@ export function LoginPage(): React.JSX.Element {
                 setLoggedInUser({
                     accountName: data.user.name,
                     email: data.user.email,
-                    role: "user", // Assuming role is not returned in this response, defaulting to "user"
+                    role: data.user.role, // Assuming role is returned in this response
                 });
 
                 navigate("/", { replace: true }); 
