@@ -40,15 +40,15 @@
       border-radius: 0 0 6px 6px;
 }
 
-label {
+.login-form label {
       font-weight: 500;
       color: #333;
       margin-bottom: 0.25rem;
 }
 
-select,
-input[type=text],
-input[type=password] {
+.login-form select,
+.login-form input[type=text],
+.login-form input[type=password] {
       width: 100%;
       padding: 12px 16px;
       margin: 8px 0 16px 0;
@@ -60,9 +60,9 @@ input[type=password] {
       font-size: 1rem;
 }
 
-select:focus,
-input[type=text]:focus,
-input[type=password]:focus {
+.login-form select:focus,
+.login-form input[type=text]:focus,
+.login-form input[type=password]:focus {
       outline: none;
       border: 1px solid #007bff;
 }
