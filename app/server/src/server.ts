@@ -23,7 +23,7 @@ app.post("/register", registerHandler);
 
 app.post("/login", loginHandler);
 
-app.get("/me", meHandler)
+app.get("/me", meHandler);
 
 app.post("/logout", logoutHandler);
 

@@ -99,7 +99,7 @@ export function HomePage(): React.JSX.Element {
       <button className="carousel-btn next" onClick={nextSlide}>
         &#10095;
       </button>
-      {/* <InputField label="Search for recipes..." /> */}
+      <InputField label="Search for recipes..." />
     </div>
   );
 }

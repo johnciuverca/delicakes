@@ -4,6 +4,7 @@ import express, { type Request, type Response } from "express";
 import cors from "cors";
 
 import transactionRoutes from "./model/transactions.js";
+import { addRecipeHandler, getRecipesHandler } from "./handlers/recipes.js";
 
 const app = express();
 
@@ -18,6 +19,10 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.use("/api/transactions", transactionRoutes);
+
+app.post("/api/recipes", addRecipeHandler);
+
+app.get("/api/recipes", getRecipesHandler);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console

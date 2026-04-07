@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { type Recipe } from "../model/recipe.js";
 
 export type Transaction = {
   id: number;
@@ -127,3 +128,20 @@ export async function deleteTransaction(id: number | string): Promise<void> {
 
   await pool.query("DELETE FROM public.transactions WHERE id = $1", [idNumber]);
 }
+
+export async function getAllRecipes(): Promise<Recipe[]> {
+    const result = await pool.query("SELECT * FROM recipes");
+    return result.rows
+}
+
+export async function addRecipe(recipe: Omit<Recipe, "id">): Promise<Recipe> {
+    const {title, category, description, imageSrc} = recipe;
+    const result = await pool.query(
+        `INSERT INTO recipes (title, category, description, imageSrc)
+         VALUES ($1, $2, $3, $4)
+         RETURNING *`,
+        [title, category, description, imageSrc]
+    );
+    return result.rows[0];
+}
+
