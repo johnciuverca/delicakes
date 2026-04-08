@@ -152,6 +152,42 @@ export function RecipesPage() {
         });
     };
 
+    const handleDeleteSelectedRecipes = () => {
+        if(!isAdmin) {
+            setDeleteError("Only admin users can delete recipes.");
+            return;
+        }
+
+        if(selectedRecipeIds.length === 0) {
+            setDeleteError("Please select at least one recipe to delete.");
+            return;
+        }
+        
+        setIsDeleting(true);
+
+        fetch(`${apiBaseUrl}/api/recipes`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ids: selectedRecipeIds }),
+        })
+        .then(res => {
+            if(!res.ok) throw new Error("Failed to delete recipes");
+            return res.json();
+        })
+        .then((data: {deletedIds: number[]}) => {
+            setRecipes((current) => current.filter((r) => !data.deletedIds.includes(r.id)));
+            resetDeleteState();
+        })
+        .catch(() => {
+            setDeleteError("Failed to delete recipes. Please try again.");
+        })
+        .finally(() => {
+            setIsDeleting(false);
+        });
+    };
+
     return (
         <section className="recipes-page">
             <div className="recipes-header">
@@ -267,7 +303,7 @@ export function RecipesPage() {
                         <button
                             type="button"
                             className="add-recipe-btn delete-recipe-btn"
-                            onClick={() => {}}
+                            onClick={handleDeleteSelectedRecipes}
                             disabled={isDeleting}
                         >
                             {isDeleting
