@@ -5,11 +5,14 @@ const localApiBaseUrl = "http://localhost:3100";
 const apiBaseUrl = localApiBaseUrl;
 
 type RecipeSlot = {
+    id: number;
     title: string;
     category: string;
     description: string;
     imageSrc: string;
 };
+
+type RecipeFormValues = Omit<RecipeSlot, "id">;
 
 // const initialRecipes: RecipeSlot[] = [
 //     {
@@ -69,6 +72,10 @@ export function RecipesPage() {
     const[description, setDescription] = useState("");
     const[imageSrc, setImageSrc] = useState("");
     const[formError, setFormError] = useState("");
+    const [showDeleteMode, setShowDeleteMode] = useState(false);
+    const [selectedRecipeIds, setSelectedRecipeIds] = useState<number[]>([]);
+    const [deleteError, setDeleteError] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const resetForm = () => {
         setTitle("");
@@ -76,6 +83,22 @@ export function RecipesPage() {
         setDescription("");
         setImageSrc("");
         setFormError("");
+    };
+
+    const resetDeleteState = () => {
+        setSelectedRecipeIds([]);
+        setDeleteError("");
+        setShowDeleteMode(false);
+    }
+
+    const handleToogleRecipeSelection = (recipeId: number) => {
+        setDeleteError("");
+        setSelectedRecipeIds((current) => {
+            if(current.includes(recipeId)) {
+                return current.filter((id) => id !== recipeId);
+            }
+            return [...current, recipeId];
+        });
     };
 
     useEffect(() => {
@@ -101,7 +124,7 @@ export function RecipesPage() {
 
         // const nextId = recipes.length > 0 ? Math.max(...recipes.map(r => r.id)) + 1 : 1;
         
-        const newRecipe: RecipeSlot = {
+        const newRecipe: RecipeFormValues = {
             title: title.trim(),
             category: category.trim(),
             description: description.trim(),
@@ -131,28 +154,43 @@ export function RecipesPage() {
 
     return (
         <section className="recipes-page">
-        <div className="recipes-header">
-            <p className="recipes-eyebrow">Delicakes Collection</p>
-            <h2>Our recipes</h2>
-            <p className="recipes-subtitle">
-            Discover some of our cakes, pastries and dessert ideas.
-            </p>
+            <div className="recipes-header">
+                <p className="recipes-eyebrow">Delicakes Collection</p>
+                <h2>Our recipes</h2>
+                <p className="recipes-subtitle">
+                Discover some of our cakes, pastries and dessert ideas.
+                </p>
 
-            {isAdmin && (
-            <div className="recipes-actions">
-                <button
-                    type="button"
-                    className="add-recipe-btn"
-                    onClick={() => {
-                        setFormError("");
-                        setShowAddForm((current) => !current);
-                    }}
-                >
-                    {showAddForm ? "Close Form" : "Add Recipe"}
-                </button>
+                {isAdmin && (
+                    <div className="recipes-actions">
+                        <button
+                            type="button"
+                            className="add-recipe-btn"
+                            onClick={() => {
+                                setFormError("");
+                                resetDeleteState();
+                                setShowAddForm((current) => !current);      
+                            }}
+                        >
+                            {showAddForm ? "Close Form" : "Add New Recipe"}
+                        </button>
+
+                        <button
+                            type="button"
+                            className="add-recipe-btn delete-recipe-btn"
+                            onClick={() => {
+                                resetForm();
+                                setShowAddForm(false);
+                                setDeleteError("");
+                                setSelectedRecipeIds([]);
+                                setShowDeleteMode((current) => !current);
+                            }}
+                        >
+                            {showDeleteMode ? "Close Delete Mode" : "Delete Recipes"}
+                        </button>
+                    </div>
+                )}
             </div>
-            )}
-        </div>
 
             {isAdmin && showAddForm && (
             <form className="recipe-form" onSubmit={handleAddRecipe}>
@@ -217,27 +255,76 @@ export function RecipesPage() {
                     </button>
                 </div>
             </form>
-        )}
-            <div className="recipes-grid">
-                {recipes.map((recipe, index) => (
-                    <article className="recipe-card" key={index}  /* key={recipe.id} */>
-                        <div className="recipe-image-wrap">
-                        <img
-                            className="recipe-image"
-                            src={recipe.imageSrc}
-                            alt={recipe.title}
-                        />
-                        <span className="recipe-category">{recipe.category}</span>
-                        </div>
-                        <div className="recipe-body">
-                        <h3>{recipe.title}</h3>
-                        <p>{recipe.description}</p>
-                        <button type="button" className="recipe-btn">
-                            View Recipe
+            )}
+
+            {isAdmin && showDeleteMode && (
+                <div className="recipe-form recipe-delete-panel">
+                    <p className="recipes-subtitle">Select one or more recipes, then confirm deletion.</p>
+
+                    {deleteError && <p className="recipe-form-error">{deleteError}</p>}
+
+                    <div className="recipe-form-actions">
+                        <button
+                            type="button"
+                            className="add-recipe-btn delete-recipe-btn"
+                            onClick={() => {}}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting
+                                ? "Deleting..."
+                                : `Delete Selected (${selectedRecipeIds.length})`}
                         </button>
-                        </div>
-                    </article>
-                ))}
+
+                        <button 
+                            type="button"
+                            className="recipe-btn"
+                            onClick={resetDeleteState}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
+            <div className="recipes-grid">
+                {recipes.map((recipe) => {
+                    const isSelected = selectedRecipeIds.includes(recipe.id);
+
+                    return (
+                        <article
+                            className={`recipe-card${isSelected ? " recipe-card-selected" : ""}`}
+                            key={recipe.id}
+                        >
+                            <div className="recipe-image-wrap">
+                                <img
+                                    className="recipe-image"
+                                    src={recipe.imageSrc}
+                                    alt={recipe.title}
+                                />
+                                <span className="recipe-category">{recipe.category}</span>
+                            </div>
+
+                            <div className="recipe-body">
+                                {isAdmin && showDeleteMode && (
+                                    <label className="recipe-select-control">
+                                        <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => handleToogleRecipeSelection(recipe.id)}
+                                        />
+                                        Select for deletion
+                                    </label>
+                                )}
+
+                                <h3>{recipe.title}</h3>
+                                <p>{recipe.description}</p>
+
+                                <button type="button" className="recipe-btn">
+                                    View Recipe
+                                </button>
+                            </div>
+                        </article>
+                    );
+                })}
             </div>
         </section>
      );
