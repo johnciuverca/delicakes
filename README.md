@@ -68,3 +68,36 @@ scripts\stop-servers.bat
 ## Diagrams (addTransaction)
 
 <img width="403" height="352" alt="image" src="https://github.com/user-attachments/assets/01f33df2-22fe-4b7f-b1f6-27d3ccce5811" />
+
+## Development Workflow
+
+### Project Tracking
+
+Work is tracked in the GitHub Project board with these states:
+
+1. Backlog
+2. In Progress
+3. In Review
+4. Done
+
+### Branch Naming
+
+Use this branch format:
+
+type/TICKET-short-description
+
+Examples:
+
+1. feat/ENG-001-delivery-workflow-baseline
+2. feat/ENG-002-recipe-search
+3. feat/ENG-003-recipe-filter-category
+4. chore/ENG-006-lint-test-ci-baseline
+
+### Pull Requests
+
+Every pull request should:
+
+1. Link the related ticket
+2. Include manual test notes
+3. Include a risk summary
+4. Include screenshots or video for UI changes
