@@ -73,12 +73,18 @@ scripts\stop-servers.bat
 
 ### Project Tracking
 
-Work is tracked in the GitHub Project board with these states:
+Work is tracked in the GitHub Project board:
+https://github.com/users/johnciuverca/projects/5
+
+Project states:
 
 1. Backlog
 2. In Progress
 3. In Review
 4. Done
+
+All work must be completed on a branch and merged through a pull request.
+Do not commit directly to main.
 
 ### Branch Naming
 
@@ -86,18 +92,26 @@ Use this branch format:
 
 type/TICKET-short-description
 
+Allowed branch type prefixes:
+
+1. feat for new features
+2. fix for bug fixes
+3. chore for maintenance or tooling work
+4. docs for documentation-only changes
+
 Examples:
 
 1. feat/ENG-001-delivery-workflow-baseline
 2. feat/ENG-002-recipe-search
 3. feat/ENG-003-recipe-filter-category
 4. chore/ENG-006-lint-test-ci-baseline
+5. docs/ENG-001-workflow-docs
 
 ### Pull Requests
 
-Every pull request should:
+Every pull request must:
 
-1. Link the related ticket
+1. Include a real GitHub issue reference
 2. Include manual test notes
 3. Include a risk summary
 4. Include screenshots or video for UI changes
