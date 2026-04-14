@@ -145,3 +145,20 @@ export async function addRecipe(recipe: Omit<Recipe, "id">): Promise<Recipe> {
     return result.rows[0];
 }
 
+export async function deleteRecipes(ids: number[]): Promise<number[]> {
+    const uniqueIds = [...new Set(ids)].filter(id => Number.isInteger(id) && id > 0);
+
+    if(uniqueIds.length === 0) {
+        return[];
+    }
+
+    const result = await pool.query(
+        `DELETE FROM recipes
+         WHERE id = ANY($1::int[])
+         RETURNING id`,
+        [uniqueIds]
+    );
+
+    return result.rows.map((row: { id: number }) => row.id);
+
+}

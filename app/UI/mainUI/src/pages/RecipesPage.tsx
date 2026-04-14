@@ -14,67 +14,34 @@ type RecipeSlot = {
 
 type RecipeFormValues = Omit<RecipeSlot, "id">;
 
-// const initialRecipes: RecipeSlot[] = [
-//     {
-//         id: 1,
-//         title: "Chocolate Cake",
-//         category: "Dessert",
-//         description: "A rich and moist chocolate cake perfect for any occasion.",
-//         imageSrc: "/images/chocolate_cake.jpg",
-//     },
-//     {
-//         id: 2,
-//         title: "Chocolate Delight",
-//         category: "Dessert",
-//         description: "A delightful chocolate treat for all chocolate lovers.",
-//         imageSrc: "/images/chocolate_delight.jpg",
-//     },  
-//     {
-//         id: 3,
-//         title: "Chocolate Mousse",
-//         category: "Dessert",
-//         description: "A light and airy chocolate mousse that melts in your mouth.",
-//         imageSrc: "/images/chocolate_mousse.jpg",
-//     },
-//     {
-//         id: 4,
-//         title: "Chocolate Brownies",
-//         category: "Dessert",
-//         description: "Fudgy and delicious chocolate brownies with a crispy top.",
-//         imageSrc: "/images/chocolate_brownies.jpg",
-//     },
-//     {
-//         id: 5,
-//         title: "Chocolate Chip Cookies",
-//         category: "Dessert",
-//         description: "Crispy on the outside, chewy on the inside, these chocolate chip cookies are a classic treat.",
-//         imageSrc: "/images/chocolate_chip_cookies.jpg",
-//     },
-//     {  
-//         id: 6,
-//         title: "Chocolate Ice Cream",
-//         category: "Dessert",
-//         description: "Creamy and rich chocolate ice cream, perfect for a hot day.",
-//         imageSrc: "/images/chocolate_ice_cream.jpg",
-//     },
-// ];
+type RecipesResponse = {
+    recipes: RecipeSlot[];
+};
+
+type AddRecipeResponse = {
+    newRecipe: RecipeSlot;
+};
+
+type DeleteRecipesResponse = {
+    deletedIds: number[];
+};
 
 export function RecipesPage() {
-    
     const [loggedInUser] = useUserState();
     const isAdmin = loggedInUser?.role === "admin";
 
-    // const [recipes, setRecipes] = useState<RecipeSlot[]>(initialRecipes);
     const [recipes, setRecipes] = useState<RecipeSlot[]>([]);
     const [showAddForm, setShowAddForm] = useState(false);
-    const[title, setTitle] = useState("");
-    const[category, setCategory] = useState("");
-    const[description, setDescription] = useState("");
-    const[imageSrc, setImageSrc] = useState("");
-    const[formError, setFormError] = useState("");
     const [showDeleteMode, setShowDeleteMode] = useState(false);
-    const [selectedRecipeIds, setSelectedRecipeIds] = useState<number[]>([]);
+
+    const [title, setTitle] = useState("");
+    const [category, setCategory] = useState("");
+    const [description, setDescription] = useState("");
+    const [imageSrc, setImageSrc] = useState("");
+
+    const [formError, setFormError] = useState("");
     const [deleteError, setDeleteError] = useState("");
+    const [selectedRecipeIds, setSelectedRecipeIds] = useState<number[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const resetForm = () => {
@@ -89,41 +56,38 @@ export function RecipesPage() {
         setSelectedRecipeIds([]);
         setDeleteError("");
         setShowDeleteMode(false);
-    }
+    };
 
-    const handleToogleRecipeSelection = (recipeId: number) => {
+    const handleToggleRecipeSelection = (recipeId: number) => {
         setDeleteError("");
-        setSelectedRecipeIds((current) => {
-            if(current.includes(recipeId)) {
-                return current.filter((id) => id !== recipeId);
-            }
-            return [...current, recipeId];
-        });
+        setSelectedRecipeIds((current) =>
+            current.includes(recipeId)
+                ? current.filter((id) => id !== recipeId)
+                : [...current, recipeId],
+        );
     };
 
     useEffect(() => {
         fetch(`${apiBaseUrl}/api/recipes`)
-            .then(res => res.json())
-            .then((x) => {
-                setRecipes(x.recipes);
+            .then((res) => res.json())
+            .then((data: RecipesResponse) => {
+                setRecipes(data.recipes);
             });
     }, []);
 
     const handleAddRecipe = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if(!isAdmin) {
+        if (!isAdmin) {
             setFormError("Only admin users can add recipes.");
             return;
         }
 
-        if(!title.trim() || !category.trim() || !description.trim() || !imageSrc.trim()) {
+        if (!title.trim() || !category.trim() || !description.trim() || !imageSrc.trim()) {
             setFormError("All fields are required.");
             return;
         }
 
-        // const nextId = recipes.length > 0 ? Math.max(...recipes.map(r => r.id)) + 1 : 1;
-        
         const newRecipe: RecipeFormValues = {
             title: title.trim(),
             category: category.trim(),
@@ -138,31 +102,33 @@ export function RecipesPage() {
             },
             body: JSON.stringify(newRecipe),
         })
-        .then(res => {
-            if(!res.ok) throw new Error("Failed to add recipe");
-            return res.json();
-        })
-        .then((data) => {
-            setRecipes((current) => [...current, data.newRecipe]);
-            resetForm();
-            setShowAddForm(false);
-        })
-        .catch(() => {
-            setFormError("Failed to add recipe. Please try again.");
-        });
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Failed to add recipe");
+                }
+                return res.json();
+            })
+            .then((data: AddRecipeResponse) => {
+                setRecipes((current) => [...current, data.newRecipe]);
+                resetForm();
+                setShowAddForm(false);
+            })
+            .catch(() => {
+                setFormError("Failed to add recipe. Please try again.");
+            });
     };
 
     const handleDeleteSelectedRecipes = () => {
-        if(!isAdmin) {
+        if (!isAdmin) {
             setDeleteError("Only admin users can delete recipes.");
             return;
         }
 
-        if(selectedRecipeIds.length === 0) {
+        if (selectedRecipeIds.length === 0) {
             setDeleteError("Please select at least one recipe to delete.");
             return;
         }
-        
+
         setIsDeleting(true);
 
         fetch(`${apiBaseUrl}/api/recipes`, {
@@ -172,20 +138,24 @@ export function RecipesPage() {
             },
             body: JSON.stringify({ ids: selectedRecipeIds }),
         })
-        .then(res => {
-            if(!res.ok) throw new Error("Failed to delete recipes");
-            return res.json();
-        })
-        .then((data: {deletedIds: number[]}) => {
-            setRecipes((current) => current.filter((r) => !data.deletedIds.includes(r.id)));
-            resetDeleteState();
-        })
-        .catch(() => {
-            setDeleteError("Failed to delete recipes. Please try again.");
-        })
-        .finally(() => {
-            setIsDeleting(false);
-        });
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Failed to delete recipes");
+                }
+                return res.json();
+            })
+            .then((data: DeleteRecipesResponse) => {
+                setRecipes((current) =>
+                    current.filter((recipe) => !data.deletedIds.includes(recipe.id)),
+                );
+                resetDeleteState();
+            })
+            .catch(() => {
+                setDeleteError("Failed to delete recipes. Please try again.");
+            })
+            .finally(() => {
+                setIsDeleting(false);
+            });
     };
 
     return (
@@ -194,7 +164,7 @@ export function RecipesPage() {
                 <p className="recipes-eyebrow">Delicakes Collection</p>
                 <h2>Our recipes</h2>
                 <p className="recipes-subtitle">
-                Discover some of our cakes, pastries and dessert ideas.
+                    Discover some of our cakes, pastries and dessert ideas.
                 </p>
 
                 {isAdmin && (
@@ -205,7 +175,7 @@ export function RecipesPage() {
                             onClick={() => {
                                 setFormError("");
                                 resetDeleteState();
-                                setShowAddForm((current) => !current);      
+                                setShowAddForm((current) => !current);
                             }}
                         >
                             {showAddForm ? "Close Form" : "Add New Recipe"}
@@ -229,73 +199,75 @@ export function RecipesPage() {
             </div>
 
             {isAdmin && showAddForm && (
-            <form className="recipe-form" onSubmit={handleAddRecipe}>
-                <div className="recipe-form-row">
-                    <label htmlFor="recipe-title">Title</label>
-                    <input
-                        id="recipe-title"
-                        type="text"
-                        value={title}
-                        onChange={(event) => setTitle(event.target.value)}
-                        placeholder="Chocolate Tart"
-                    />
-                </div>
+                <form className="recipe-form" onSubmit={handleAddRecipe}>
+                    <div className="recipe-form-row">
+                        <label htmlFor="recipe-title">Title</label>
+                        <input
+                            id="recipe-title"
+                            type="text"
+                            value={title}
+                            onChange={(event) => setTitle(event.target.value)}
+                            placeholder="Chocolate Tart"
+                        />
+                    </div>
 
-                <div className="recipe-form-row">
-                    <label htmlFor="recipe-category">Category</label>
-                    <input
-                        id="recipe-category"
-                        type="text"
-                        value={category}
-                        onChange={(event) => setCategory(event.target.value)}
-                        placeholder="Dessert"
-                    />
-                </div>
+                    <div className="recipe-form-row">
+                        <label htmlFor="recipe-category">Category</label>
+                        <input
+                            id="recipe-category"
+                            type="text"
+                            value={category}
+                            onChange={(event) => setCategory(event.target.value)}
+                            placeholder="Dessert"
+                        />
+                    </div>
 
-                <div className="recipe-form-row">
-                    <label htmlFor="recipe-description">Description</label>
-                    <textarea
-                        id="recipe-description"
-                        value={description}
-                        onChange={(event) => setDescription(event.target.value)}
-                        placeholder="Describe the recipe..."
-                    />
-                </div>
+                    <div className="recipe-form-row">
+                        <label htmlFor="recipe-description">Description</label>
+                        <textarea
+                            id="recipe-description"
+                            value={description}
+                            onChange={(event) => setDescription(event.target.value)}
+                            placeholder="Describe the recipe..."
+                        />
+                    </div>
 
-                <div className="recipe-form-row">
-                    <label htmlFor="recipe-image">Image URL</label>
-                    <input
-                        id="recipe-image"
-                        type="text"
-                        value={imageSrc}
-                        onChange={(event) => setImageSrc(event.target.value)}
-                        placeholder="/images/new_recipe.jpg"
-                    />
-                </div>
+                    <div className="recipe-form-row">
+                        <label htmlFor="recipe-image">Image URL</label>
+                        <input
+                            id="recipe-image"
+                            type="text"
+                            value={imageSrc}
+                            onChange={(event) => setImageSrc(event.target.value)}
+                            placeholder="/images/new_recipe.jpg"
+                        />
+                    </div>
 
-                {formError && <p className="recipe-form-error">{formError}</p>}
+                    {formError && <p className="recipe-form-error">{formError}</p>}
 
-                <div className="recipe-form-actions">
-                    <button type="submit" className="add-recipe-btn">
-                        Save Recipe
-                    </button>
-                    <button
-                        type="button"
-                        className="recipe-btn"
-                        onClick={() => {
-                            resetForm();
-                            setShowAddForm(false);
-                        }}
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </form>
+                    <div className="recipe-form-actions">
+                        <button type="submit" className="add-recipe-btn">
+                            Save Recipe
+                        </button>
+                        <button
+                            type="button"
+                            className="recipe-btn"
+                            onClick={() => {
+                                resetForm();
+                                setShowAddForm(false);
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
             )}
 
             {isAdmin && showDeleteMode && (
                 <div className="recipe-form recipe-delete-panel">
-                    <p className="recipes-subtitle">Select one or more recipes, then confirm deletion.</p>
+                    <p className="recipes-subtitle">
+                        Select one or more recipes, then confirm deletion.
+                    </p>
 
                     {deleteError && <p className="recipe-form-error">{deleteError}</p>}
 
@@ -311,7 +283,7 @@ export function RecipesPage() {
                                 : `Delete Selected (${selectedRecipeIds.length})`}
                         </button>
 
-                        <button 
+                        <button
                             type="button"
                             className="recipe-btn"
                             onClick={resetDeleteState}
@@ -321,6 +293,7 @@ export function RecipesPage() {
                     </div>
                 </div>
             )}
+
             <div className="recipes-grid">
                 {recipes.map((recipe) => {
                     const isSelected = selectedRecipeIds.includes(recipe.id);
@@ -345,7 +318,7 @@ export function RecipesPage() {
                                         <input
                                             type="checkbox"
                                             checked={isSelected}
-                                            onChange={() => handleToogleRecipeSelection(recipe.id)}
+                                            onChange={() => handleToggleRecipeSelection(recipe.id)}
                                         />
                                         Select for deletion
                                     </label>
@@ -363,5 +336,5 @@ export function RecipesPage() {
                 })}
             </div>
         </section>
-     );
-}   
+    );
+}

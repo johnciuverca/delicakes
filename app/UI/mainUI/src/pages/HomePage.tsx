@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import InputField from "../components/InputField";
 
 type SlideState = {
   currentPhotoIndex: number;
@@ -99,7 +98,6 @@ export function HomePage(): React.JSX.Element {
       <button className="carousel-btn next" onClick={nextSlide}>
         &#10095;
       </button>
-      <InputField label="Search for recipes..." />
     </div>
   );
 }
