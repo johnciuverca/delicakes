@@ -7,14 +7,12 @@
             "build": "tsc -p tsconfig.json",
             "start": "node dist/server.js",
             "dev": "nodemon --watch src --ext ts --exec \"npm run build && node dist/server.js\"",
-
             "app:dev": "PORT=3000 npm run dev",
             "api:dev": "PORT=3100 npm --prefix ../../api run dev",
             "mainui:build": "npm --prefix ../UI/mainUI run build",
             "mainui:watch": "npm --prefix ../UI/mainUI run watch",
             "expense-tracker:build": "npm --prefix ../UI/expense-tracker run build",
-            "expense-tracker:watch": "npm --prefix ../UI/expense-tracker run watch"
-            ,
+            "expense-tracker:watch": "npm --prefix ../UI/expense-tracker run watch",
             "win:mainui:build": "npm --prefix ..\\UI\\mainUI run win:build",
             "win:expense-tracker:build": "npm --prefix ..\\UI\\expense-tracker run win:build"
       },
@@ -28,11 +26,17 @@
             "pg": "^8.18.0"
       },
       "devDependencies": {
+            "@eslint/js": "^10.0.1",
             "@types/cookie-parser": "^1.4.9",
             "@types/express": "^4.17.23",
             "@types/node": "^22.13.5",
             "@types/pg": "^8.15.5",
+            "@typescript-eslint/eslint-plugin": "^8.58.2",
+            "@typescript-eslint/parser": "^8.58.2",
+            "eslint": "^10.2.0",
+            "eslint-config-prettier": "^10.1.8",
             "nodemon": "^3.0.1",
+            "prettier": "^3.8.3",
             "typescript": "^5.9.3"
       }
 }

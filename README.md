@@ -68,3 +68,7 @@ scripts\stop-servers.bat
 ## Diagrams (addTransaction)
 
 <img width="403" height="352" alt="image" src="https://github.com/user-attachments/assets/01f33df2-22fe-4b7f-b1f6-27d3ccce5811" />
+
+## Automated Testing
+
+Automated tests are not yet enforced by CI. This is a known gap and will be addressed in a future ticket. Currently, only linting and formatting are enforced as quality gates.

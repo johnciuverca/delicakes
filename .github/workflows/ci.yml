@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies (api)
+        run: |
+          cd api
+          npm ci
+
+      - name: Install dependencies (mainUI)
+        run: |
+          cd app/UI/mainUI
+          npm ci
+
+      - name: Lint (api)
+        run: |
+          cd api
+          npm run lint
+
+      - name: Lint (mainUI)
+        run: |
+          cd app/UI/mainUI
+          npm run lint
+
+      - name: Format check (api)
+        run: |
+          cd api
+          npm run format:check
+
+      - name: Format check (mainUI)
+        run: |
+          cd app/UI/mainUI
+          npm run format:check
