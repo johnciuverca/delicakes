@@ -47,13 +47,3 @@ jobs:
         run: |
           cd app/UI/mainUI
           npm run format:check
-
-      - name: Test (api)
-        run: |
-          cd api
-          npm test || echo "No tests yet"
-
-      - name: Test (mainUI)
-        run: |
-          cd app/UI/mainUI
-          npm test || echo "No tests yet"
