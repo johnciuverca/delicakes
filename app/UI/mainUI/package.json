@@ -8,13 +8,16 @@
             "copy-static": "mkdir -p dist/style dist/assets && cp -R src/style/. dist/style/ && cp -R assets/. dist/assets/",
             "build": "npm run clean && TS_NODE_PROJECT=tsconfig.webpack.json node -r ts-node/register ./node_modules/webpack/bin/webpack.js --config webpack.config.cts --mode production && npm run copy-static",
             "watch:static": "chokidar \"src/style/**\" \"assets/**\" -c \"npm run copy-static\"",
-            "watch": "npm run copy-static && concurrently -k -n static,webpack \"npm run watch:static\" \"TS_NODE_PROJECT=tsconfig.webpack.json node -r ts-node/register ./node_modules/webpack/bin/webpack.js --config webpack.config.cts --mode development --watch\""
-            ,
+            "watch": "npm run copy-static && concurrently -k -n static,webpack \"npm run watch:static\" \"TS_NODE_PROJECT=tsconfig.webpack.json node -r ts-node/register ./node_modules/webpack/bin/webpack.js --config webpack.config.cts --mode development --watch\"",
             "win:clean": "if exist dist rmdir /S /Q dist",
             "win:copy-static": "if not exist dist\\style mkdir dist\\style & if not exist dist\\assets mkdir dist\\assets & xcopy /E /I /Y src\\style dist\\style & xcopy /E /I /Y assets dist\\assets",
             "win:build": "npm run win:clean && set TS_NODE_PROJECT=tsconfig.webpack.json&& node -r ts-node/register .\\node_modules\\webpack\\bin\\webpack.js --config webpack.config.cts --mode production && npm run win:copy-static",
             "win:watch:static": "npx chokidar \"src/style/**\" \"assets/**\" -c \"npm run win:copy-static\"",
-            "win:watch": "npm run win:copy-static && npx concurrently -k -n static,webpack \"npm run win:watch:static\" \"set TS_NODE_PROJECT=tsconfig.webpack.json&& node -r ts-node/register .\\node_modules\\webpack\\bin\\webpack.js --config webpack.config.cts --mode development --watch\""
+            "win:watch": "npm run win:copy-static && npx concurrently -k -n static,webpack \"npm run win:watch:static\" \"set TS_NODE_PROJECT=tsconfig.webpack.json&& node -r ts-node/register .\\node_modules\\webpack\\bin\\webpack.js --config webpack.config.cts --mode development --watch\"",
+            "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+            "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+            "lint": "eslint \"src/**/*.{ts,tsx,js,jsx}\"",
+            "lint:fix": "eslint \"src/**/*.{ts,tsx,js,jsx}\" --fix"
       },
       "dependencies": {
             "react": "^19.1.1",
@@ -23,15 +26,26 @@
             "react-router-dom": "^7.9.2"
       },
       "devDependencies": {
+            "@eslint/js": "^9.39.4",
+            "@testing-library/jest-dom": "^6.9.1",
+            "@testing-library/react": "^16.3.2",
             "@types/node": "^22.13.5",
             "@types/react": "^19.1.8",
             "@types/react-dom": "^19.1.6",
+            "@typescript-eslint/eslint-plugin": "^8.58.2",
+            "@typescript-eslint/parser": "^8.58.2",
             "chokidar-cli": "^3.0.0",
             "concurrently": "^9.2.1",
+            "eslint": "^9.39.4",
+            "eslint-config-prettier": "^10.1.8",
+            "eslint-plugin-react-hooks": "^7.0.1",
             "html-webpack-plugin": "^5.6.3",
+            "jsdom": "^29.0.2",
+            "prettier": "^3.8.3",
             "ts-loader": "^9.5.4",
             "ts-node": "^10.9.2",
             "typescript": "^5.9.3",
+            "vitest": "^4.1.4",
             "webpack": "^5.101.3",
             "webpack-cli": "^6.0.1"
       }

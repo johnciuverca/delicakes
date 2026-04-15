@@ -1,25 +1,25 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type SlideState = {
   currentPhotoIndex: number;
 };
 
 const imageFiles = [
-  "1.jpeg",
-  "2.jpeg",
-  "3.jpeg",
-  "4.jpeg",
-  "5.jpeg",
-  "6.jpeg",
-  "7.jpeg",
-  "8.jpeg",
-  "9.jpeg",
-  "10.jpeg",
-  "11.jpeg",
-  "12.jpeg",
-  "WhatsApp Image 2025-10-06 at 13.10.37.jpeg",
-  "maria1.jpeg",
-  "maria2.jpeg",
+  '1.jpeg',
+  '2.jpeg',
+  '3.jpeg',
+  '4.jpeg',
+  '5.jpeg',
+  '6.jpeg',
+  '7.jpeg',
+  '8.jpeg',
+  '9.jpeg',
+  '10.jpeg',
+  '11.jpeg',
+  '12.jpeg',
+  'WhatsApp Image 2025-10-06 at 13.10.37.jpeg',
+  'maria1.jpeg',
+  'maria2.jpeg',
 ];
 
 function clampIndex(index: number, maxIndex: number): number {
@@ -56,8 +56,8 @@ export function HomePage(): React.JSX.Element {
 
   useEffect(() => {
     const onResize = () => showCurrentPhotos();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, [showCurrentPhotos]);
 
   useEffect(() => {
