@@ -115,3 +115,6 @@ Every pull request must:
 2. Include manual test notes
 3. Include a risk summary
 4. Include screenshots or video for UI changes
+## Automated Testing
+
+Automated tests are not yet enforced by CI. This is a known gap and will be addressed in a future ticket. Currently, only linting and formatting are enforced as quality gates.
