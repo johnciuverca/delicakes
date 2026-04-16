@@ -31,6 +31,7 @@ export function RecipesPage() {
   const isAdmin = loggedInUser?.role === 'admin';
 
   const [recipes, setRecipes] = useState<RecipeSlot[]>([]);
+  const [displayedRecipes, setDisplayedRecipes] = useState<RecipeSlot[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showDeleteMode, setShowDeleteMode] = useState(false);
 
@@ -72,8 +73,16 @@ export function RecipesPage() {
       .then((res) => res.json())
       .then((data: RecipesResponse) => {
         setRecipes(data.recipes);
+        setDisplayedRecipes(data.recipes);
       });
   }, []);
+
+  useEffect(() => {
+    const filteredRecipes = recipes.filter((recipe) => {
+      return recipe.title.includes(searchQuery.trim());    
+    });
+    setDisplayedRecipes(filteredRecipes);
+  }, [searchQuery, recipes]);
 
   const handleAddRecipe = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -159,20 +168,19 @@ export function RecipesPage() {
   return (
     <section className="recipes-page">
       <div className="recipes-header">
+        <p className="recipes-eyebrow">Delicakes Collection</p>
+        <h2>Our recipes</h2>
+        <p className="recipes-subtitle">Discover some of our cakes, pastries and dessert ideas.</p>
         <div className='recipes-search'>
             <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search recipes by name"
+                placeholder="Search recipes by title"
                 className='recipes-search-input'
-                aria-label='Search recipes by name'
+                aria-label='Search recipes by title'
             />
         </div>
-        <p className="recipes-eyebrow">Delicakes Collection</p>
-        <h2>Our recipes</h2>
-        <p className="recipes-subtitle">Discover some of our cakes, pastries and dessert ideas.</p>
-
         {isAdmin && (
           <div className="recipes-actions">
             <button
@@ -293,7 +301,7 @@ export function RecipesPage() {
       )}
 
       <div className="recipes-grid">
-        {recipes.map((recipe) => {
+        {displayedRecipes.map((recipe) => {
           const isSelected = selectedRecipeIds.includes(recipe.id);
 
           return (
