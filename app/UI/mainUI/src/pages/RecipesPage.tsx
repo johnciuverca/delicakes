@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, use, useEffect, useState } from 'react';
 import { useUserState } from '../state/AppContext';
 
 const localApiBaseUrl = 'http://localhost:3100';
@@ -43,6 +43,8 @@ export function RecipesPage() {
   const [deleteError, setDeleteError] = useState('');
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<number[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   const resetForm = () => {
     setTitle('');
@@ -157,6 +159,16 @@ export function RecipesPage() {
   return (
     <section className="recipes-page">
       <div className="recipes-header">
+        <div className='recipes-search'>
+            <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search recipes by name"
+                className='recipes-search-input'
+                aria-label='Search recipes by name'
+            />
+        </div>
         <p className="recipes-eyebrow">Delicakes Collection</p>
         <h2>Our recipes</h2>
         <p className="recipes-subtitle">Discover some of our cakes, pastries and dessert ideas.</p>
