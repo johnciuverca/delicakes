@@ -80,7 +80,6 @@ export const loginHandler = async (req: Request<Record<string, never>, unknown, 
 			return;
 		}
 	} catch (caught) {
-		// eslint-disable-next-line no-console
 		console.error("Error authenticating user:", caught);
 		res.status(500).json({ message: "Authentication failed" });
 		return;
@@ -123,7 +122,6 @@ export const changePasswordHandler = (req: Request<any, any, ChangePasswordBody>
                 res.status(200).json({ message: "Password changed successfully" });
             })
             .catch((err) => {
-                // eslint-disable-next-line no-console
                 console.error("Error updating password:", err);
                 res.status(500).json({ message: "Failed to change password" });
             });
