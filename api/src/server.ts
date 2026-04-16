@@ -27,6 +27,5 @@ app.get('/api/recipes', getRecipesHandler);
 app.delete('/api/recipes', deleteRecipesHandler);
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`Server running on port ${PORT} in ${ENVIRONMENT} mode`);
 });
