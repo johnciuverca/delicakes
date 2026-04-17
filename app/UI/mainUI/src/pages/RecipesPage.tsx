@@ -1,5 +1,6 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useUserState } from '../state/AppContext';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
 
 const localApiBaseUrl = 'http://localhost:3100';
 const apiBaseUrl = localApiBaseUrl;
@@ -45,7 +46,8 @@ export function RecipesPage() {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState('');
-
+    const debouncedSearchQuery = useDebouncedValue(searchQuery, 700);
+    
     const resetForm = useCallback(() => {
         setTitle('');
         setCategory('');
@@ -68,20 +70,22 @@ export function RecipesPage() {
     }, []);
 
     const fetchRecipes = useCallback(() => {
-        const url = searchQuery.trim()
-            ? `${apiBaseUrl}/api/recipes?search=${encodeURIComponent(searchQuery.trim())}`
+        const url = debouncedSearchQuery.trim()
+            ? `${apiBaseUrl}/api/recipes?search=${encodeURIComponent(debouncedSearchQuery.trim())}`
             : `${apiBaseUrl}/api/recipes`;
         fetch(url)
             .then((res) => res.json())
             .then((data: RecipesResponse) => {
                 setRecipes(data.recipes);
             });
-    }, [searchQuery]);
+    }, [debouncedSearchQuery]);
 
     useEffect(() => {
         fetchRecipes();
-    }, [fetchRecipes]);
+    }, [debouncedSearchQuery, fetchRecipes]);
 
+
+    
     const handleAddRecipe = useCallback((event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
