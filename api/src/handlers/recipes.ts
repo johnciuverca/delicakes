@@ -1,14 +1,21 @@
-import { type Request, type Response } from 'express';
-import { addRecipe, deleteRecipes, getAllRecipes } from '../data/dbStorage.js';
-import { Recipe } from '../model/recipe.js';
+import { type Request, type Response } from "express";
+import { addRecipe, deleteRecipes, getAllRecipes } from "../data/dbStorage.js";
+import { Recipe } from "../model/recipe.js";
 
 export const getRecipesHandler = (req: Request, res: Response) => {
+  const search = req.query.search ? String(req.query.search).toLowerCase() : "";
   getAllRecipes()
     .then((recipes) => {
-      res.json({ recipes });
+      let filteredRecipes = recipes;
+      if (search) {
+        filteredRecipes = recipes.filter((recipe) =>
+          recipe.title.toLocaleLowerCase().includes(search),
+        );
+      }
+      res.json({ recipes: filteredRecipes });
     })
     .catch(() => {
-      res.status(500).json({ error: 'Failed to fetch recipes' });
+      res.status(500).json({ error: "Failed to fetch recipes" });
     });
 };
 
@@ -16,10 +23,10 @@ export const addRecipeHandler = (req: Request, res: Response) => {
   const { title, category, description, imageSrc } = req.body;
 
   if (!title || !category || !description || !imageSrc) {
-    res.status(400).json({ error: 'All fields are required' });
+    res.status(400).json({ error: "All fields are required" });
     return;
   }
-  const recipe: Omit<Recipe, 'id'> = {
+  const recipe: Omit<Recipe, "id"> = {
     title,
     category,
     description,
@@ -31,7 +38,7 @@ export const addRecipeHandler = (req: Request, res: Response) => {
       res.status(201).json({ newRecipe });
     })
     .catch((err) => {
-      const error = new Error('Failed to add recipe', {
+      const error = new Error("Failed to add recipe", {
         cause: err,
       });
       console.error(error);
@@ -40,17 +47,21 @@ export const addRecipeHandler = (req: Request, res: Response) => {
 };
 
 export const deleteRecipesHandler = (req: Request, res: Response) => {
-  const ids = Array.isArray(req.body.ids) ? (req.body.ids as Array<string>) : null;
+  const ids = Array.isArray(req.body.ids)
+    ? (req.body.ids as Array<string>)
+    : null;
 
   if (!ids) {
-    res.status(400).json({ error: 'IDs must be an array of strings' });
+    res.status(400).json({ error: "IDs must be an array of strings" });
     return;
   }
 
-  const normalizedIds = ids.map((id) => Number(id)).filter((id) => !isNaN(id) && id > 0);
+  const normalizedIds = ids
+    .map((id) => Number(id))
+    .filter((id) => !isNaN(id) && id > 0);
 
   if (normalizedIds.length === 0) {
-    res.status(400).json({ error: 'No valid IDs provided' });
+    res.status(400).json({ error: "No valid IDs provided" });
     return;
   }
 
@@ -59,7 +70,7 @@ export const deleteRecipesHandler = (req: Request, res: Response) => {
       res.json({ deletedIds });
     })
     .catch((err) => {
-      const error = new Error('Failed to delete recipes', {
+      const error = new Error("Failed to delete recipes", {
         cause: err,
       });
       console.error(error);

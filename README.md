@@ -119,3 +119,8 @@ Every pull request must:
 ## Automated Testing
 
 Automated tests are not yet enforced by CI. This is a known gap and will be addressed in a future ticket. Currently, only linting and formatting are enforced as quality gates.
+
+{displayedRecipes.length === 0 && (
+
+  <div>No recipes found</div>
+)}
