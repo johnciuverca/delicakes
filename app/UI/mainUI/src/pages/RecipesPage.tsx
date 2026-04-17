@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useUserState } from '../state/AppContext';
 
 const localApiBaseUrl = 'http://localhost:3100';
@@ -46,28 +46,28 @@ export function RecipesPage() {
 
     const [searchQuery, setSearchQuery] = useState('');
 
-    const resetForm = () => {
+    const resetForm = useCallback(() => {
         setTitle('');
         setCategory('');
         setDescription('');
         setImageSrc('');
         setFormError('');
-    };
+    }, []);
 
-    const resetDeleteState = () => {
+    const resetDeleteState = useCallback(() => {
         setSelectedRecipeIds([]);
         setDeleteError('');
         setShowDeleteMode(false);
-    };
+    }, []);
 
-    const handleToggleRecipeSelection = (recipeId: number) => {
+    const handleToggleRecipeSelection = useCallback((recipeId: number) => {
         setDeleteError('');
         setSelectedRecipeIds((current) =>
             current.includes(recipeId) ? current.filter((id) => id !== recipeId) : [...current, recipeId],
         );
-    };
+    }, []);
 
-    const fetchRecipes = () => {
+    const fetchRecipes = useCallback(() => {
         const url = searchQuery.trim()
             ? `${apiBaseUrl}/api/recipes?search=${encodeURIComponent(searchQuery.trim())}`
             : `${apiBaseUrl}/api/recipes`;
@@ -76,13 +76,13 @@ export function RecipesPage() {
             .then((data: RecipesResponse) => {
                 setRecipes(data.recipes);
             });
-    };
+    }, [searchQuery]);
 
     useEffect(() => {
         fetchRecipes();
-    }, [searchQuery])
+    }, [fetchRecipes]);
 
-    const handleAddRecipe = (event: FormEvent<HTMLFormElement>) => {
+    const handleAddRecipe = useCallback((event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!isAdmin) {
@@ -123,9 +123,9 @@ export function RecipesPage() {
             .catch(() => {
                 setFormError('Failed to add recipe. Please try again.');
             });
-    };
+    }, [fetchRecipes, resetForm, isAdmin]);
 
-    const handleDeleteSelectedRecipes = () => {
+    const handleDeleteSelectedRecipes = useCallback(() => {
         if (!isAdmin) {
             setDeleteError('Only admin users can delete recipes.');
             return;
@@ -161,7 +161,7 @@ export function RecipesPage() {
             .finally(() => {
                 setIsDeleting(false);
             });
-    };
+    }, [fetchRecipes, resetDeleteState, isAdmin, selectedRecipeIds]);
 
     return (
         <section className="recipes-page">
