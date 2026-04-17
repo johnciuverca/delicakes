@@ -1,10 +1,10 @@
 import { type Request, type Response } from "express";
-import { addRecipe, deleteRecipes, getAllRecipes } from "../data/dbStorage.js";
+import { addRecipe, deleteRecipes, getRecipes } from "../data/dbStorage.js";
 import { Recipe } from "../model/recipe.js";
 
 export const getRecipesHandler = (req: Request, res: Response) => {
   const search = req.query.search ? String(req.query.search).toLowerCase() : "";
-  getAllRecipes()
+  getRecipes()
     .then((recipes) => {
       let filteredRecipes = recipes;
       if (search) {

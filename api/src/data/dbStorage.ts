@@ -1,5 +1,5 @@
-import { Pool } from 'pg';
-import { type Recipe } from '../model/recipe.js';
+import { Pool } from "pg";
+import { type Recipe } from "../model/recipe.js";
 
 export type Transaction = {
   id: number;
@@ -15,19 +15,21 @@ type DbState = {
 
 function getDatabaseUrl(): string {
   const rawDatabaseUrl = process.env.DATABASE_URL;
-  if (!rawDatabaseUrl || typeof rawDatabaseUrl !== 'string') {
-    throw new Error('DATABASE_URL is required and must be a string');
+  if (!rawDatabaseUrl || typeof rawDatabaseUrl !== "string") {
+    throw new Error("DATABASE_URL is required and must be a string");
   }
 
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(rawDatabaseUrl);
   } catch {
-    throw new Error('DATABASE_URL is not a valid URL');
+    throw new Error("DATABASE_URL is not a valid URL");
   }
 
   if (!parsedUrl.password) {
-    throw new Error('DATABASE_URL must include a database password for SCRAM authentication');
+    throw new Error(
+      "DATABASE_URL must include a database password for SCRAM authentication",
+    );
   }
 
   return rawDatabaseUrl;
@@ -117,7 +119,7 @@ export async function updateTransaction(
   recordDate: string,
 ): Promise<void> {
   await ensureStorageReady();
-  const idNumber = typeof id === 'string' ? Number(id) : id;
+  const idNumber = typeof id === "string" ? Number(id) : id;
 
   await pool.query(
     `UPDATE public.transactions
@@ -131,17 +133,25 @@ export async function updateTransaction(
 
 export async function deleteTransaction(id: number | string): Promise<void> {
   await ensureStorageReady();
-  const idNumber = typeof id === 'string' ? Number(id) : id;
+  const idNumber = typeof id === "string" ? Number(id) : id;
 
-  await pool.query('DELETE FROM public.transactions WHERE id = $1', [idNumber]);
+  await pool.query("DELETE FROM public.transactions WHERE id = $1", [idNumber]);
 }
 
-export async function getAllRecipes(): Promise<Recipe[]> {
-  const result = await pool.query('SELECT * FROM recipes');
-  return result.rows;
+export async function getRecipes(search?: string): Promise<Recipe[]> {
+  if (search && search.trim() !== "") {
+    const result = await pool.query(
+      `SELECT * FROM recipes WHERE LOWER(title) LIKE $1`,
+      [`%${search.toLowerCase()}%`],
+    );
+    return result.rows;
+  } else {
+    const result = await pool.query(`SELECT * FROM recipes`);
+    return result.rows;
+  }
 }
 
-export async function addRecipe(recipe: Omit<Recipe, 'id'>): Promise<Recipe> {
+export async function addRecipe(recipe: Omit<Recipe, "id">): Promise<Recipe> {
   const { title, category, description, imageSrc } = recipe;
   const result = await pool.query(
     `INSERT INTO recipes (title, category, description, imageSrc)
@@ -153,7 +163,9 @@ export async function addRecipe(recipe: Omit<Recipe, 'id'>): Promise<Recipe> {
 }
 
 export async function deleteRecipes(ids: number[]): Promise<number[]> {
-  const uniqueIds = [...new Set(ids)].filter((id) => Number.isInteger(id) && id > 0);
+  const uniqueIds = [...new Set(ids)].filter(
+    (id) => Number.isInteger(id) && id > 0,
+  );
 
   if (uniqueIds.length === 0) {
     return [];

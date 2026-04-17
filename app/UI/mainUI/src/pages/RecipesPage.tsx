@@ -31,7 +31,6 @@ export function RecipesPage() {
     const isAdmin = loggedInUser?.role === 'admin';
 
     const [recipes, setRecipes] = useState<RecipeSlot[]>([]);
-    const [displayedRecipes, setDisplayedRecipes] = useState<RecipeSlot[]>([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [showDeleteMode, setShowDeleteMode] = useState(false);
 
@@ -68,7 +67,7 @@ export function RecipesPage() {
         );
     };
 
-    useEffect(() => {
+    const fetchRecipes = () => {
         const url = searchQuery.trim()
             ? `${apiBaseUrl}/api/recipes?search=${encodeURIComponent(searchQuery.trim())}`
             : `${apiBaseUrl}/api/recipes`;
@@ -76,9 +75,12 @@ export function RecipesPage() {
             .then((res) => res.json())
             .then((data: RecipesResponse) => {
                 setRecipes(data.recipes);
-                setDisplayedRecipes(data.recipes);
             });
-    }, [searchQuery]);
+    };
+
+    useEffect(() => {
+        fetchRecipes();
+    }, [searchQuery])
 
     const handleAddRecipe = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -114,7 +116,7 @@ export function RecipesPage() {
                 return res.json();
             })
             .then((data: AddRecipeResponse) => {
-                setRecipes((current) => [...current, data.newRecipe]);
+                fetchRecipes();
                 resetForm();
                 setShowAddForm(false);
             })
@@ -150,7 +152,7 @@ export function RecipesPage() {
                 return res.json();
             })
             .then((data: DeleteRecipesResponse) => {
-                setRecipes((current) => current.filter((recipe) => !data.deletedIds.includes(recipe.id)));
+                fetchRecipes();
                 resetDeleteState();
             })
             .catch(() => {
@@ -297,10 +299,10 @@ export function RecipesPage() {
             )}
 
             <div className="recipes-grid">
-                {displayedRecipes.length === 0 && (
+                {recipes.length === 0 && (
                     <div>No recipes found</div>
                 )}
-                {displayedRecipes.map((recipe) => {
+                {recipes.map((recipe) => {
                     const isSelected = selectedRecipeIds.includes(recipe.id);
 
                     return (
