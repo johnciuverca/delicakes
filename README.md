@@ -118,9 +118,12 @@ Every pull request must:
 
 ## Automated Testing
 
-Automated tests are not yet enforced by CI. This is a known gap and will be addressed in a future ticket. Currently, only linting and formatting are enforced as quality gates.
+Automated tests are not yet enforced by CI. This is a known gap and will be addressed in a future ticket.
 
-{displayedRecipes.length === 0 && (
+## Recipe Search
 
-  <div>No recipes found</div>
-)}
+- The recipes page now includes a search box at the top.
+- As you type, the list updates in real time.
+- Search is case-insensitive and matches any part of the recipe name.
+- If no recipes match, a “No recipes found” message is shown.
+- Clearing the search box restores the full list.

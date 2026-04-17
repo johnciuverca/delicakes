@@ -4,15 +4,9 @@ import { Recipe } from "../model/recipe.js";
 
 export const getRecipesHandler = (req: Request, res: Response) => {
   const search = req.query.search ? String(req.query.search).toLowerCase() : "";
-  getRecipes()
+  getRecipes(search)
     .then((recipes) => {
-      let filteredRecipes = recipes;
-      if (search) {
-        filteredRecipes = recipes.filter((recipe) =>
-          recipe.title.toLocaleLowerCase().includes(search),
-        );
-      }
-      res.json({ recipes: filteredRecipes });
+      res.json({ recipes });
     })
     .catch(() => {
       res.status(500).json({ error: "Failed to fetch recipes" });
