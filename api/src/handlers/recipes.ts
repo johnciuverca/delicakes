@@ -3,13 +3,14 @@ import { addRecipe, deleteRecipes, getRecipes } from "../data/dbStorage.js";
 import { Recipe } from "../model/recipe.js";
 
 export const getRecipesHandler = (req: Request, res: Response) => {
-  const search = req.query.search ? String(req.query.search).toLowerCase() : "";
-  getRecipes(search)
+    const search = req.query.search ? String(req.query.search).toLowerCase() : undefined;
+    const category = req.query.category ? String(req.query.category) : undefined;
+    getRecipes(search, category)
     .then((recipes) => {
-      res.json({ recipes });
+        res.json({ recipes });
     })
     .catch(() => {
-      res.status(500).json({ error: "Failed to fetch recipes" });
+        res.status(500).json({ error: "Failed to fetch recipes" });
     });
 };
 
