@@ -138,17 +138,27 @@ export async function deleteTransaction(id: number | string): Promise<void> {
   await pool.query("DELETE FROM public.transactions WHERE id = $1", [idNumber]);
 }
 
-export async function getRecipes(search?: string): Promise<Recipe[]> {
-  if (search && search.trim() !== "") {
-    const result = await pool.query(
-      `SELECT * FROM recipes WHERE LOWER(title) LIKE $1`,
-      [`%${search.toLowerCase()}%`],
-    );
-    return result.rows;
-  } else {
-    const result = await pool.query(`SELECT * FROM recipes`);
-    return result.rows;
+export async function getRecipes(
+  search?: string,
+  category?: string,
+): Promise<Recipe[]> {
+  let query = "SELECT * FROM recipes";
+  const whereClauses: string[] = [];
+  const params: any[] = [];
+
+  if (search) {
+    params.push(`%${search.toLowerCase()}%`);
+    whereClauses.push(`LOWER(title) LIKE $` + params.length);
   }
+  if (category && category !== "All categories") {
+    params.push(category);
+    whereClauses.push(`category = $` + params.length);
+  }
+  if (whereClauses.length > 0) {
+    query += " WHERE " + whereClauses.join(" AND ");
+  }
+  const result = await pool.query(query, params);
+  return result.rows;
 }
 
 export async function addRecipe(recipe: Omit<Recipe, "id">): Promise<Recipe> {
@@ -179,4 +189,36 @@ export async function deleteRecipes(ids: number[]): Promise<number[]> {
   );
 
   return result.rows.map((row: { id: number }) => row.id);
+}
+
+// Favorite recipes management functions
+
+export async function addRecipeToFavorites(
+  userId: number,
+  recipeId: number,
+): Promise<void> {
+  await pool.query(
+    "INSERT INTO favorites(user_id, recipe_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+    [userId, recipeId],
+  );
+}
+
+export async function removeRecipeFromFavorites(
+  userId: number,
+  recipeId: number,
+): Promise<void> {
+  await pool.query(
+    "DELETE FROM favorites WHERE user_id = $1 AND recipe_id = $2",
+    [userId, recipeId],
+  );
+}
+
+export async function getFavoriteRecipeIdsForUser(
+  userId: number,
+): Promise<number[]> {
+  const result = await pool.query(
+    "SELECT recipe_id FROM favorites WHERE user_id = $1",
+    [userId],
+  );
+  return result.rows.map((row) => row.recipe_id);
 }
