@@ -1,9 +1,8 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useUserState } from '../state/AppContext';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
-
-const localApiBaseUrl = 'http://localhost:3100';
-const apiBaseUrl = localApiBaseUrl;
+import RecipeCategories from '../components/RecipeCategories';
+import { apiBaseUrl, defaultCategory } from '../shared/shared';
 
 type RecipeSlot = {
     id: number;
@@ -15,7 +14,7 @@ type RecipeSlot = {
 
 type RecipeFormValues = Omit<RecipeSlot, 'id'>;
 
-type RecipesResponse = {
+ type RecipesResponse = {
     recipes: RecipeSlot[];
 };
 
@@ -27,6 +26,7 @@ type DeleteRecipesResponse = {
     deletedIds: number[];
 };
 
+
 export function RecipesPage() {
     const [loggedInUser] = useUserState();
     const isAdmin = loggedInUser?.role === 'admin';
@@ -36,7 +36,7 @@ export function RecipesPage() {
     const [showDeleteMode, setShowDeleteMode] = useState(false);
 
     const [title, setTitle] = useState('');
-    const [category, setCategory] = useState('');
+    const [category, setCategory] = useState(defaultCategory);
     const [description, setDescription] = useState('');
     const [imageSrc, setImageSrc] = useState('');
 
@@ -50,7 +50,6 @@ export function RecipesPage() {
     
     const resetForm = useCallback(() => {
         setTitle('');
-        setCategory('');
         setDescription('');
         setImageSrc('');
         setFormError('');
@@ -70,19 +69,24 @@ export function RecipesPage() {
     }, []);
 
     const fetchRecipes = useCallback(() => {
-        const url = debouncedSearchQuery.trim()
-            ? `${apiBaseUrl}/api/recipes?search=${encodeURIComponent(debouncedSearchQuery.trim())}`
-            : `${apiBaseUrl}/api/recipes`;
+        const params = new URLSearchParams();
+        if (debouncedSearchQuery.trim()) {
+            params.append('search', debouncedSearchQuery.trim());
+        }
+        if (category && category !== defaultCategory) {
+            params.append('category', category);
+        }
+        const url = `${apiBaseUrl}/api/recipes?${params.toString()}`;
         fetch(url)
             .then((res) => res.json())
             .then((data: RecipesResponse) => {
                 setRecipes(data.recipes);
             });
-    }, [debouncedSearchQuery]);
+    }, [debouncedSearchQuery, category]);
 
     useEffect(() => {
         fetchRecipes();
-    }, [debouncedSearchQuery, fetchRecipes]);
+    }, [debouncedSearchQuery, category, fetchRecipes]);
 
 
     
@@ -182,6 +186,7 @@ export function RecipesPage() {
                         className='recipes-search-input'
                         aria-label='Search recipes by title'
                     />
+                    <RecipeCategories onCategoryChange={(value) => setCategory(value)}/>
                 </div>
                 {isAdmin && (
                     <div className="recipes-actions">
