@@ -180,3 +180,34 @@ export async function deleteRecipes(ids: number[]): Promise<number[]> {
 
   return result.rows.map((row: { id: number }) => row.id);
 }
+
+//Favorites related functions
+export async function addRecipeToFavorites(
+  userId: number,
+  recipeId: number,
+): Promise<void> {
+  await pool.query(
+    "INSERT INTO favorites(user_id, recipe_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+    [userId, recipeId],
+  );
+}
+
+export async function removeRecipeFromFavorites(
+  userId: number,
+  recipeId: number,
+): Promise<void> {
+  await pool.query(
+    "DELETE FROM favorites WHERE user_id = $1 AND recipe_id = $2",
+    [userId, recipeId],
+  );
+}
+
+export async function getFavoriteRecipeIdsForUser(
+  userId: number,
+): Promise<number[]> {
+  const result = await pool.query(
+    "SELECT recipe_id FROM favorites WHERE user_id = $1",
+    [userId],
+  );
+  return result.rows.map((row) => row.recipe_id);
+}
