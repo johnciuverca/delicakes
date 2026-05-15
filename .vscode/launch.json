@@ -28,7 +28,7 @@
             {
                   "type": "node",
                   "request": "launch",
-                  "name": "Run Server (Dev)",
+                  "name": "Run API Server (Dev)",
                   "runtimeExecutable": "npm",
                   "runtimeArgs": [
                         "run",
@@ -37,6 +37,12 @@
                   "cwd": "${workspaceFolder}/api",
                   "console": "integratedTerminal",
                   "restart": true,
+                  "autoAttachChildProcesses": true,
+                  "env": {
+                        "NODE_OPTIONS": "--inspect"
+                  },
+                  "sourceMaps": true,
+                  "outFiles": ["${workspaceFolder}\\api\\dist\\**\\*.js"],
                   "skipFiles": [
                         "<node_internals>/**",
                   ]
@@ -67,6 +73,15 @@
                   "skipFiles": [
                         "<node_internals>/**"
                   ]
+            },
+            {
+                  "type": "node",
+                  "request": "attach",
+                  "name": "Attach to Node API Server (3100)",
+                  "address": "localhost",
+                  "port": 3100,
+                  "restart": false,
+                  "protocol": "inspector"
             }
       ]
 }

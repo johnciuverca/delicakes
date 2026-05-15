@@ -73,11 +73,16 @@ export function RecipesPage() {
         const url = debouncedSearchQuery.trim()
             ? `${apiBaseUrl}/api/recipes?search=${encodeURIComponent(debouncedSearchQuery.trim())}`
             : `${apiBaseUrl}/api/recipes`;
-        fetch(url)
-            .then((res) => res.json())
-            .then((data: RecipesResponse) => {
-                setRecipes(data.recipes);
-            });
+        fetch(url, {
+            headers: {
+                // 'x-dev-auth': 'devtoken',
+                'x-api-key': 'sk_7f3b2c9e8a4d1f6c2b9e0a4d7f1c8e3a'
+            }
+        })
+        .then((res) => res.json())
+        .then((data: RecipesResponse) => {
+            setRecipes(data.recipes);
+        });
     }, [debouncedSearchQuery]);
 
     useEffect(() => {
@@ -110,6 +115,7 @@ export function RecipesPage() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'x-dev-auth': 'devtoken'
             },
             body: JSON.stringify(newRecipe),
         })
