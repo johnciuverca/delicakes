@@ -76,6 +76,10 @@ web_modules/
 .env.*
 !.env.example
 
+# API keys
+appdata/devapikey
+appdata/apikeys
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
