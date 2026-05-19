@@ -1,61 +1,37 @@
-import { User } from "../model/user.js";
 import { readFile } from 'node:fs/promises';
 
-const DEV_USER: User = {
-  id: 1,
-  name: "Dev User",
-  role: "user",
-};
-
-const TEMP_USER: User = {
-  id: 2,
-  name: "Temp User",
-  role: "user",
-};
-
-const devAuthHeader = "x-dev-auth";
 const apiKeyHeader = "x-api-key";
+
+const DEV_USER = {
+  id: "dev-user",
+  name: "Developer",
+  email: ""
+}
 
 export async function authMiddleware(req: any, res: any, next: any) {
   req.user = null;
   
-  const devAuth = req.headers[devAuthHeader];
-  if (process.env.NODE_ENV === "development" && devAuth === "devtoken") {
+  const devApiKey = await getDevApiKey();
+  const receivedApiKey = req.headers[apiKeyHeader];
+  
+  if (devApiKey && process.env.NODE_ENV === "development" && receivedApiKey === devApiKey) {
     req.user = DEV_USER;
     return next();
   }
   
-  req.user = await authenticateUser(req);
-  if (req.user) {
-    return next();
-  }
-  
-  return res.status(401).json({ message: "Unauthorized" });
+  res.status(401).json({ error: "Unauthorized" });
+  return;
 }
 
-async function authenticateUser(req: any): Promise<User | null> {
-  var apiKey = req.headers[apiKeyHeader];
-  
-  if(apiKey) {
-    const apiKeys = await readFile("/Users/ciuverca/Desktop/1T career/delicakes/appdata/apikeys", "utf-8")
-      .then(data => data.split("\n").map(line => line.trim()).filter(line => line.length > 0));
-    
-    if (apiKeys.includes(apiKey)) {
-      return TEMP_USER;
+async function getDevApiKey(): Promise<string | null> {
+    const content = await readFile("/Users/ciuverca/Desktop/1T career/delicakes/appdata/devapikey", "utf-8");
+    const lines = content
+      .split("\n")
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+      
+    if(lines.length > 1) {
+        console.warn("Warning: Multiple lines found in devapikey file. Using the first line as the API key.");
     }
-  }
-  return null;
+    return lines.length > 0 ? lines[0] : null;
 }
-
-/*
-[
-  {
-    "key": "asda",
-    "value": "asdasd"
-  },
-  {
-    "key": "x-api-key",
-    "value": "asdaeq2131sadc123qwasd"
-  }
-]
-*/

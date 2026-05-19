@@ -1,6 +1,5 @@
 import "dotenv/config";
-
-import express, { type Request, type Response } from "express";
+import express from "express";
 import cors from "cors";
 
 import transactionRoutes from "./model/transactions.js";
@@ -11,10 +10,11 @@ import {
 } from "./handlers/recipes.js";
 import { authMiddleware } from "./middlewares/authMiddleware.js";
 
-const app = express();
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3100;
 const ENVIRONMENT = process.env.ENVIRONMENT || "DEV";
+
+const app = express();
 
 const corsMiddleware = cors();
 const jsonMiddleware = express.json();
@@ -22,10 +22,6 @@ const jsonMiddleware = express.json();
 app.use(corsMiddleware);
 app.use(authMiddleware);
 app.use(jsonMiddleware);
-
-app.get("/", (_req: Request, res: Response) => {
-  res.json({ message: "Delicakes Money Tracker API" });
-});
 
 app.use("/api/transactions", transactionRoutes);
 

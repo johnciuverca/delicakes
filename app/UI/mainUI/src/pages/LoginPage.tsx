@@ -44,6 +44,7 @@ export function LoginPage(): React.JSX.Element {
               accountName: data.user.name,
               email: data.user.email,
               role: data.user.role, // Assuming role is returned in this response
+              password: password, // TODO: Clear password for security
             });
 
             navigate('/', { replace: true });

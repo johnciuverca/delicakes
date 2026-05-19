@@ -50,28 +50,23 @@
             {
                   "type": "node",
                   "request": "launch",
-                  "name": "Run App (Dev)",
+                  "name": "Run App Server (Dev)",
                   "runtimeExecutable": "npm",
                   "runtimeArgs": [
                         "run",
                         "dev"
                   ],
-                  "cwd": "${workspaceFolder}/app",
+                  "cwd": "${workspaceFolder}/app/server",
                   "console": "integratedTerminal",
                   "restart": true,
+                  "autoAttachChildProcesses": true,
+                  "env": {
+                        "NODE_OPTIONS": "--inspect"
+                  },
+                  "sourceMaps": true,
+                  "outFiles": ["${workspaceFolder}\\app\\server\\dist\\**\\*.js"],
                   "skipFiles": [
                         "<node_internals>/**",
-                  ]
-            },
-            {
-                  "type": "node",
-                  "request": "launch",
-                  "name": "Debug App Server",
-                  "program": "${workspaceFolder}/app/server.js",
-                  "cwd": "${workspaceFolder}/app",
-                  "console": "integratedTerminal",
-                  "skipFiles": [
-                        "<node_internals>/**"
                   ]
             },
             {
@@ -82,6 +77,13 @@
                   "port": 3100,
                   "restart": false,
                   "protocol": "inspector"
+            }
+      ],
+      "compounds": [
+            {
+                  "name": "Debug Both Servers",
+                  "configurations": ["Run App Server (Dev)", "Run API Server (Dev)"],
+                  "stopAll": true
             }
       ]
 }
