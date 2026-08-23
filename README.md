@@ -1,129 +1,131 @@
-# delicakes
+# DELICAKES
 
-## Development Setup
+DELICAKES is a full-stack web application for browsing cake recipes and managing application data through a React frontend, Node.js services, and a PostgreSQL-backed API.
+
+The project includes a main recipe experience, authentication flows, a recipes API, and a separate expense-tracker interface.
+
+## Technology stack
+
+- React and React DOM
+- TypeScript
+- React Router
+- React Hook Form
+- Node.js and Express
+- PostgreSQL
+- Webpack
+- Vitest and Testing Library
+- Git and GitHub
+
+## Features
+
+- Homepage with cake carousel
+- Recipe browsing and case-insensitive recipe search
+- Empty-state handling when no recipes match a search
+- About and Contact pages
+- Login and registration flows
+- Authentication middleware and protected API behavior
+- Recipes API backed by PostgreSQL
+- Expense-tracker interface
+- Responsive, component-based user interfaces
+
+## Repository structure
+
+- `app/UI/mainUI` — main React and TypeScript user interface
+- `app/UI/expense-tracker` — expense-tracker frontend
+- `app/server` — main Node.js and Express application server
+- `api` — PostgreSQL-backed API service
+- `docs` — planning and technical documentation
+
+## Development setup
 
 ### Prerequisites
 
-- Node.js + npm installed
-- macOS (the helper scripts open new Terminal windows)
+- Node.js and npm
+- PostgreSQL for the data-backed API features
 
-### Start (dev)
+### Start the application
 
-From the repo root:
+From the repository root:
 
 ```bash
 ./scripts/start-servers.sh --watch
 ```
 
-- App server: http://localhost:3000
+- Application server: http://localhost:3000
 - Data API: http://localhost:3100
 
-### Stop
-
-```bash
-./scripts/stop-servers.sh
-```
-
-## Windows (batch scripts)
-
-From the repo root in `cmd.exe` or PowerShell:
-
-```bat
-scripts\start-servers.bat
-```
-
-Optional UI watch mode (opens a third terminal for `mainUI` + `expense-tracker` watches):
-
-```bat
-scripts\start-servers.bat --watch
-```
-
-Stop all terminals started by the batch script:
-
-```bat
-scripts\stop-servers.bat
-```
-
-### Notes
-
-- `app/server` is the main entrypoint (it also builds/watches `mainUI` and `expense-tracker`).
-- If you don’t want installs to run automatically, use:
+To start without automatic dependency installation:
 
 ```bash
 ./scripts/start-servers.sh --watch --no-install
 ```
 
-## Use-Case Diagram
+### Stop the application
 
-<img width="864" height="398" alt="image" src="https://github.com/user-attachments/assets/8cecd145-cfad-4af5-8679-202f6fd601b2" />
+```bash
+./scripts/stop-servers.sh
+```
 
-## Flow Diagram (addTransaction)
+## Useful commands
 
-<img width="257" height="418" alt="image" src="https://github.com/user-attachments/assets/5fb150a3-e545-4afe-bdc5-030e66b906db" />
+Build the main UI:
 
-## Sequence Diagram (addTransaction)
+```bash
+npm --prefix app/UI/mainUI run build
+```
 
-<img width="688" height="443" alt="image" src="https://github.com/user-attachments/assets/87fb4342-e3bd-46b7-a9fb-34c689130ae1" />
+Build the API:
 
-## Diagrams (addTransaction)
+```bash
+npm --prefix api run build
+```
 
-<img width="403" height="352" alt="image" src="https://github.com/user-attachments/assets/01f33df2-22fe-4b7f-b1f6-27d3ccce5811" />
+Run the main UI checks:
 
-## Development Workflow
+```bash
+npm --prefix app/UI/mainUI run test
+npm --prefix app/UI/mainUI run lint
+```
 
-### Project Tracking
+## Project diagrams
 
-Work is tracked in the GitHub Project board:
-https://github.com/users/johnciuverca/projects/5
+### Use-case diagram
 
-Project states:
+<img width="864" height="398" alt="DELICAKES use-case diagram" src="https://github.com/user-attachments/assets/8cecd145-cfad-4af5-8679-202f6fd601b2">
 
-1. Backlog
-2. In Progress
-3. In Review
-4. Done
+### `addTransaction` flow diagram
 
-All work must be completed on a branch and merged through a pull request.
-Do not commit directly to main.
+<img width="257" height="418" alt="addTransaction flow diagram" src="https://github.com/user-attachments/assets/5fb150a3-e545-4afe-bdc5-030e66b906db">
 
-### Branch Naming
+### `addTransaction` sequence diagram
 
-Use this branch format:
+<img width="688" height="443" alt="addTransaction sequence diagram" src="https://github.com/user-attachments/assets/87fb4342-e3bd-46b7-a9fb-34c689130ae1">
 
-type/TICKET-short-description
+### `addTransaction` diagrams
 
-Allowed branch type prefixes:
+<img width="403" height="352" alt="addTransaction diagrams" src="https://github.com/user-attachments/assets/01f33df2-22fe-4b7f-b1f6-27d3ccce5811">
 
-1. feat for new features
-2. fix for bug fixes
-3. chore for maintenance or tooling work
-4. docs for documentation-only changes
+## Recipe search
 
-Examples:
+The recipes page includes a search box that:
 
-1. feat/ENG-001-delivery-workflow-baseline
-2. feat/ENG-002-recipe-search
-3. feat/ENG-003-recipe-filter-category
-4. chore/ENG-006-lint-test-ci-baseline
-5. docs/ENG-001-workflow-docs
+- Updates the recipe list as the user types
+- Matches recipe names case-insensitively
+- Matches any part of a recipe name
+- Shows a `No recipes found` message when there are no matches
+- Restores the full list when the search is cleared
 
-### Pull Requests
+## Development workflow
 
-Every pull request must:
+Work is tracked through GitHub Issues and Project boards. Changes are developed on branches and merged through pull requests rather than committed directly to `main`.
 
-1. Include a real GitHub issue reference
-2. Include manual test notes
-3. Include a risk summary
-4. Include screenshots or video for UI changes
+The repository uses the following branch prefixes:
 
-## Automated Testing
+- `feat` — new functionality
+- `fix` — bug fixes
+- `chore` — maintenance or tooling
+- `docs` — documentation-only changes
 
-Automated tests are not yet enforced by CI. This is a known gap and will be addressed in a future ticket.
+## Current status
 
-## Recipe Search
-
-- The recipes page now includes a search box at the top.
-- As you type, the list updates in real time.
-- Search is case-insensitive and matches any part of the recipe name.
-- If no recipes match, a “No recipes found” message is shown.
-- Clearing the search box restores the full list.
+DELICAKES is under active development. The application is being expanded incrementally with additional API functionality, authentication behavior, recipes features, testing, and documentation.
