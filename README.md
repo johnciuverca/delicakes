@@ -28,6 +28,10 @@ The project includes a main recipe experience, authentication flows, a recipes A
 - Expense-tracker interface
 - Responsive, component-based user interfaces
 
+## Homepage preview
+
+![DELICAKES homepage](docs/screenshots/homepage.jpg)
+
 ## Repository structure
 
 - `app/UI/mainUI` — main React and TypeScript user interface
