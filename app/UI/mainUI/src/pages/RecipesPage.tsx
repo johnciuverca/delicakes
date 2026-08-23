@@ -2,8 +2,8 @@ import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useUserState } from '../state/AppContext';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 
-const localApiBaseUrl = 'http://localhost:3100';
-const apiBaseUrl = localApiBaseUrl;
+// const localApiBaseUrl = 'http://localhost:3100';
+// const apiBaseUrl = localApiBaseUrl;
 
 type RecipeSlot = {
     id: number;
@@ -71,14 +71,19 @@ export function RecipesPage() {
 
     const fetchRecipes = useCallback(() => {
         const url = debouncedSearchQuery.trim()
-            ? `${apiBaseUrl}/api/recipes?search=${encodeURIComponent(debouncedSearchQuery.trim())}`
-            : `${apiBaseUrl}/api/recipes`;
-        fetch(url)
-            .then((res) => res.json())
-            .then((data: RecipesResponse) => {
-                setRecipes(data.recipes);
-            });
-    }, [debouncedSearchQuery]);
+            ? `/recipes?search=${encodeURIComponent(debouncedSearchQuery.trim())}`
+            : "/recipes";
+        fetch(url, {
+            headers: {
+                'x-user-email': loggedInUser?.email || '',
+                'x-user-password': loggedInUser?.password || '',
+            }
+        })
+        .then((res) => res.json())
+        .then((data: RecipesResponse) => {
+            setRecipes(data.recipes);
+        });
+    }, [debouncedSearchQuery, loggedInUser]);
 
     useEffect(() => {
         fetchRecipes();
@@ -106,27 +111,28 @@ export function RecipesPage() {
             imageSrc: imageSrc.trim(),
         };
 
-        fetch(`${apiBaseUrl}/api/recipes`, {
+        fetch("/recipes", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'x-dev-auth': 'devtoken'
             },
             body: JSON.stringify(newRecipe),
         })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error('Failed to add recipe');
-                }
-                return res.json();
-            })
-            .then((data: AddRecipeResponse) => {
-                fetchRecipes();
-                resetForm();
-                setShowAddForm(false);
-            })
-            .catch(() => {
-                setFormError('Failed to add recipe. Please try again.');
-            });
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error('Failed to add recipe');
+            }
+            return res.json();
+        })
+        .then((data: AddRecipeResponse) => {
+            fetchRecipes();
+            resetForm();
+            setShowAddForm(false);
+        })
+        .catch(() => {
+            setFormError('Failed to add recipe. Please try again.');
+        });
     }, [fetchRecipes, resetForm, isAdmin]);
 
     const handleDeleteSelectedRecipes = useCallback(() => {
@@ -142,7 +148,7 @@ export function RecipesPage() {
 
         setIsDeleting(true);
 
-        fetch(`${apiBaseUrl}/api/recipes`, {
+        fetch("/recipes", {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

@@ -41,6 +41,7 @@ export function App(): React.JSX.Element {
           accountName: data.user.name,
           email: data.user.email,
           role: data.user.role,
+          password: '',
         });
       })
       .catch(() => {

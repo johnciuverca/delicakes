@@ -1,6 +1,14 @@
 import { Pool } from "pg";
 import { type Recipe } from "../model/recipe.js";
 
+export type UserRecord = {
+  id: number;
+  email: string;
+  passwordHash: string;
+  name: string;
+  role: "user" | "admin";
+};
+
 export type Transaction = {
   id: number;
   description: string;
@@ -56,6 +64,35 @@ async function ensureStorageReady(): Promise<void> {
   }
 
   await ensureTablePromise;
+}
+
+export async function getUserByEmail(email: string): Promise<UserRecord | null> {
+  const result = await pool.query<{
+    id: number;
+    email: string;
+    password_hash: string;
+    name: string;
+    role: "user" | "admin";
+  }>(
+    `SELECT id, email, password_hash, "name", role
+     FROM public.users
+     WHERE email = $1
+     LIMIT 1`,
+    [email.toLowerCase().trim()],
+  );
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    email: row.email,
+    passwordHash: row.password_hash,
+    name: row.name,
+    role: row.role,
+  };
 }
 
 export async function getAllTransactions(): Promise<Transaction[]> {
@@ -179,4 +216,35 @@ export async function deleteRecipes(ids: number[]): Promise<number[]> {
   );
 
   return result.rows.map((row: { id: number }) => row.id);
+}
+
+//Favorites related functions
+export async function addRecipeToFavorites(
+  userId: number,
+  recipeId: number,
+): Promise<void> {
+  await pool.query(
+    "INSERT INTO favorites(user_id, recipe_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+    [userId, recipeId],
+  );
+}
+
+export async function removeRecipeFromFavorites(
+  userId: number,
+  recipeId: number,
+): Promise<void> {
+  await pool.query(
+    "DELETE FROM favorites WHERE user_id = $1 AND recipe_id = $2",
+    [userId, recipeId],
+  );
+}
+
+export async function getFavoriteRecipeIdsForUser(
+  userId: number,
+): Promise<number[]> {
+  const result = await pool.query(
+    "SELECT recipe_id FROM favorites WHERE user_id = $1",
+    [userId],
+  );
+  return result.rows.map((row) => row.recipe_id);
 }
